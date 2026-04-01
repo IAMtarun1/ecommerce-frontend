@@ -11,3 +11,24 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Product Card Hover Effect */
+.product-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+/* Rating Stars */
+.cursor-pointer {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.cursor-pointer:hover {
+  color: #ffc107 !important;
+}
