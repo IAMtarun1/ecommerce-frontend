@@ -1,15 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Table, Button, Row, Col, Alert, Spinner } from 'react-bootstrap';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Container, Table, Button, Row, Col } from 'react-bootstrap';
 import { cartAPI, orderAPI } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { showSuccess, showError } from '../../utils/toast';
+import ShippingModal from './ShippingModal';
+import toast from 'react-hot-toast';
 
 const Cart = () => {
   const [cart, setCart] = useState({ items: [], totalAmount: 0 });
   const [loading, setLoading] = useState(true);
+  const [updatingItem, setUpdatingItem] = useState(null);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [showShippingModal, setShowShippingModal] = useState(false);
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+  const fetchCart = useCallback(async () => {
+    try {
+      console.log('Fetching cart...');
+      const response = await cartAPI.getCart();
+      console.log('Cart response:', response.data);
+      setCart(response.data);
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching cart:', err);
+      setCart({ items: [], totalAmount: 0 });
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -17,124 +36,188 @@ const Cart = () => {
       return;
     }
     fetchCart();
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, fetchCart]);
 
-  const fetchCart = async () => {
-    try {
-      const response = await cartAPI.getCart();
-      setCart(response.data);
-      setLoading(false);
-    } catch (err) {
-      setLoading(false);
-    }
-  };
-
-  const updateQuantity = async (itemId, quantity) => {
+  const updateQuantity = async (itemId, quantity, productName) => {
+    if (quantity < 1) return;
+    
+    setUpdatingItem(itemId);
+    const loadingToast = toast.loading(`Updating ${productName}...`, { position: 'top-center' });
+    
     try {
       await cartAPI.updateItem(itemId, quantity);
-      fetchCart();
+      toast.dismiss(loadingToast);
+      showSuccess(`${productName} quantity updated to ${quantity}`);
+      await fetchCart();
     } catch (err) {
-      alert('Failed to update quantity');
+      toast.dismiss(loadingToast);
+      console.error('Update error:', err);
+      showError('Failed to update quantity');
+    } finally {
+      setUpdatingItem(null);
     }
   };
 
-  const removeItem = async (itemId) => {
+  const removeItem = async (itemId, productName) => {
+    console.log(`Removing item with ID: ${itemId}, Product: ${productName}`);
+    
+    setUpdatingItem(itemId);
+    const loadingToast = toast.loading(`Removing ${productName}...`, { position: 'top-center' });
+    
     try {
       await cartAPI.removeItem(itemId);
-      fetchCart();
+      toast.dismiss(loadingToast);
+      showSuccess(`${productName} removed from cart`);
+      await fetchCart();
     } catch (err) {
-      alert('Failed to remove item');
+      toast.dismiss(loadingToast);
+      console.error('Remove error:', err);
+      if (err.response?.status === 403) {
+        showError('Cannot remove item. Please try again.');
+      } else {
+        showError('Failed to remove item');
+      }
+    } finally {
+      setUpdatingItem(null);
     }
   };
 
-  const checkout = async () => {
+  const handleCheckoutClick = () => {
+    setShowShippingModal(true);
+  };
+
+  const handleShippingConfirm = async (shippingAddress, addressData) => {
     setCheckoutLoading(true);
+    const loadingToast = toast.loading('Processing your order...', { position: 'top-center' });
+    
     try {
-      const shippingAddress = prompt('Enter shipping address:');
-      if (!shippingAddress) {
-        setCheckoutLoading(false);
-        return;
-      }
-      
       const response = await orderAPI.checkout(shippingAddress, 'CREDIT_CARD');
-      alert(`Order created successfully! Order #: ${response.data.orderNumber}`);
+      toast.dismiss(loadingToast);
+      showSuccess(`Order ${response.data.orderNumber} placed successfully`);
       navigate('/orders');
     } catch (err) {
-      alert('Checkout failed: ' + (err.response?.data?.message || 'Unknown error'));
+      toast.dismiss(loadingToast);
+      console.error('Checkout error:', err);
+      showError('Checkout failed');
     } finally {
       setCheckoutLoading(false);
     }
   };
 
-  if (loading) return (
-    <Container className="text-center mt-5">
-      <Spinner animation="border" />
-    </Container>
-  );
+  if (loading) {
+    return (
+      <Container className="text-center mt-5">
+        <div className="spinner-custom mx-auto"></div>
+        <p className="mt-3 text-white">Loading cart...</p>
+      </Container>
+    );
+  }
 
-  if (cart.items.length === 0) {
+  if (!cart.items || cart.items.length === 0) {
     return (
       <Container className="mt-5 text-center">
-        <h3>Your cart is empty</h3>
-        <Button variant="primary" onClick={() => navigate('/products')}>
-          Continue Shopping
-        </Button>
+        <div className="glass-card p-5">
+          <h3>Your cart is empty</h3>
+          <p className="text-muted mt-2">Looks like you haven't added anything yet!</p>
+          <Button onClick={() => navigate('/products')} className="btn-gradient mt-3 px-4 py-2">
+            Continue Shopping
+          </Button>
+        </div>
       </Container>
     );
   }
 
   return (
-    <Container className="mt-4">
-      <h1 className="mb-4">Shopping Cart</h1>
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>Product</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Subtotal</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {cart.items.map((item) => (
-            <tr key={item.id}>
-              <td>{item.productName}</td>
-              <td>${item.price}</td>
-              <td>
-                <input
-                  type="number"
-                  value={item.quantity}
-                  onChange={(e) => updateQuantity(item.id, parseInt(e.target.value))}
-                  min="1"
-                  style={{ width: '60px' }}
-                />
-              </td>
-              <td>${item.subtotal}</td>
-              <td>
-                <Button variant="danger" size="sm" onClick={() => removeItem(item.id)}>
-                  Remove
+    <>
+      <Container className="mt-4">
+        <h1 className="mb-4 text-white fw-bold">Shopping Cart</h1>
+        <div className="glass-card p-4">
+          <div className="table-responsive">
+            <Table hover responsive className="align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Price</th>
+                  <th>Quantity</th>
+                  <th>Subtotal</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {cart.items.map((item) => (
+                  <tr key={item.id} className="cart-item">
+                    <td>
+                      <div className="fw-bold">{item.productName}</div>
+                      <small className="text-muted">Cart Item ID: {item.id}</small>
+                    </td>
+                    <td>${item.price}</td>
+                    <td style={{ width: '120px' }}>
+                      <input
+                        type="number"
+                        value={item.quantity}
+                        onChange={(e) => updateQuantity(item.id, parseInt(e.target.value), item.productName)}
+                        min="1"
+                        className="form-control form-control-sm"
+                        disabled={updatingItem === item.id}
+                      />
+                    </td>
+                    <td className="fw-bold text-primary">${item.subtotal}</td>
+                    <td>
+                      <Button 
+                        variant="outline-danger" 
+                        size="sm"
+                        onClick={() => removeItem(item.id, item.productName)}
+                        disabled={updatingItem === item.id}
+                        className="rounded-pill"
+                      >
+                        {updatingItem === item.id ? '...' : 'Remove'}
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
+          
+          <Row className="mt-4">
+            <Col md={{ span: 6, offset: 6 }}>
+              <div className="order-summary p-4">
+                <h4 className="mb-3 fw-bold">Order Summary</h4>
+                <hr />
+                <div className="d-flex justify-content-between mb-3">
+                  <span>Subtotal:</span>
+                  <span className="fw-bold">${cart.totalAmount}</span>
+                </div>
+                <div className="d-flex justify-content-between mb-3">
+                  <span>Shipping:</span>
+                  <span className="text-success">Free</span>
+                </div>
+                <hr />
+                <div className="d-flex justify-content-between mb-4">
+                  <strong className="fs-5">Total:</strong>
+                  <strong className="text-primary fs-3">${cart.totalAmount}</strong>
+                </div>
+                <Button 
+                  variant="success" 
+                  size="lg" 
+                  onClick={handleCheckoutClick}
+                  disabled={checkoutLoading}
+                  className="w-100 btn-gradient"
+                >
+                  {checkoutLoading ? 'Processing...' : 'Proceed to Checkout'}
                 </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-      <Row className="mt-4">
-        <Col md={{ span: 6, offset: 6 }}>
-          <h3>Total: ${cart.totalAmount}</h3>
-          <Button 
-            variant="success" 
-            size="lg" 
-            onClick={checkout}
-            disabled={checkoutLoading}
-            className="w-100 mt-3"
-          >
-            {checkoutLoading ? 'Processing...' : 'Proceed to Checkout'}
-          </Button>
-        </Col>
-      </Row>
-    </Container>
+              </div>
+            </Col>
+          </Row>
+        </div>
+      </Container>
+
+      <ShippingModal 
+        show={showShippingModal}
+        onHide={() => setShowShippingModal(false)}
+        onConfirm={handleShippingConfirm}
+      />
+    </>
   );
 };
 

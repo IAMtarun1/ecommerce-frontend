@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Spinner, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Button, Alert } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 import { productAPI, cartAPI } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import { showLoadingToast, showError } from '../../utils/toast';
 import ReviewList from '../reviews/ReviewList';
 
 const ProductDetail = () => {
@@ -32,27 +33,36 @@ const ProductDetail = () => {
 
   const addToCart = async () => {
     if (!isAuthenticated) {
-      alert('Please login to add items to cart');
+      showError('Please login to add items to cart');
       navigate('/login');
       return;
     }
 
     setAddingToCart(true);
+    
     try {
-      await cartAPI.addItem(product.id, 1);
-      alert('Product added to cart successfully!');
+      await showLoadingToast(
+        `Adding ${product.name} to cart...`,
+        `${product.name} added to cart`,
+        'Failed to add to cart',
+        () => cartAPI.addItem(product.id, 1)
+      );
     } catch (err) {
-      alert('Failed to add to cart');
+      console.error('Error adding to cart:', err);
     } finally {
       setAddingToCart(false);
     }
   };
 
+  const getPlaceholderImage = () => {
+    return `https://placehold.co/500x500/667eea/white?text=${encodeURIComponent(product?.name?.substring(0, 20) || 'Product')}`;
+  };
+
   if (loading) {
     return (
       <Container className="text-center mt-5">
-        <Spinner animation="border" />
-        <p>Loading product details...</p>
+        <div className="spinner-custom mx-auto"></div>
+        <p className="mt-3 text-white">Loading product details...</p>
       </Container>
     );
   }
@@ -73,12 +83,6 @@ const ProductDetail = () => {
     );
   }
 
-  const getPlaceholderImage = () => {
-    const colors = ['4F46E5', '10B981', 'F59E0B', 'EF4444', '8B5CF6', 'EC4899'];
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    return `https://placehold.co/500x500/${color}/white?text=${encodeURIComponent(product.name.substring(0, 20))}`;
-  };
-
   return (
     <Container className="mt-4">
       <Row>
@@ -86,7 +90,7 @@ const ProductDetail = () => {
           <img 
             src={product.imageUrl || getPlaceholderImage()} 
             alt={product.name}
-            className="img-fluid rounded"
+            className="img-fluid rounded-4 shadow-lg"
             style={{ width: '100%', height: 'auto' }}
             onError={(e) => {
               e.target.onerror = null;
@@ -95,39 +99,43 @@ const ProductDetail = () => {
           />
         </Col>
         <Col md={6}>
-          <h1>{product.name}</h1>
-          <h3 className="text-primary">${product.price}</h3>
-          <p className="text-muted">SKU: {product.sku}</p>
-          <p className="mt-3">{product.description}</p>
-          <p className="mt-3">
-            {product.stockQuantity > 0 ? (
-              <span className="text-success fw-bold">In Stock: {product.stockQuantity}</span>
-            ) : (
-              <span className="text-danger fw-bold">Out of Stock</span>
-            )}
-          </p>
-          <Button 
-            variant="primary" 
-            size="lg"
-            onClick={addToCart}
-            disabled={product.stockQuantity === 0 || addingToCart}
-            className="mt-3"
-          >
-            {addingToCart ? 'Adding to Cart...' : 'Add to Cart'}
-          </Button>
-          <Button 
-            variant="outline-secondary" 
-            size="lg"
-            onClick={() => navigate('/products')}
-            className="mt-3 ms-2"
-          >
-            Continue Shopping
-          </Button>
+          <div className="glass-card p-4">
+            <h1 className="fw-bold">{product.name}</h1>
+            <h3 className="text-primary mt-3">${product.price}</h3>
+            <p className="text-muted mt-2">SKU: {product.sku}</p>
+            <p className="mt-3">{product.description}</p>
+            <p className="mt-3">
+              {product.stockQuantity > 0 ? (
+                <span className="text-success fw-bold">In Stock: {product.stockQuantity}</span>
+              ) : (
+                <span className="text-danger fw-bold">Out of Stock</span>
+              )}
+            </p>
+            <Button 
+              variant="primary" 
+              size="lg"
+              onClick={addToCart}
+              disabled={product.stockQuantity === 0 || addingToCart}
+              className="btn-gradient mt-3 px-4 py-2"
+            >
+              {addingToCart ? 'Adding to Cart...' : 'Add to Cart'}
+            </Button>
+            <Button 
+              variant="outline-secondary" 
+              size="lg"
+              onClick={() => navigate('/products')}
+              className="mt-3 ms-2 px-4 py-2"
+            >
+              Continue Shopping
+            </Button>
+          </div>
         </Col>
       </Row>
       
       {/* Reviews Section */}
-      <ReviewList productId={product.id} />
+      <div className="mt-5">
+        <ReviewList productId={product.id} />
+      </div>
     </Container>
   );
 };

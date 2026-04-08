@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     if (token) {
-      // Load user from token (you can add a /me endpoint)
+      // Load user from localStorage
       const userData = JSON.parse(localStorage.getItem('user') || 'null');
       if (userData) {
         setUser(userData);
@@ -24,15 +24,24 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const response = await authAPI.login({ email, password });
+      console.log('Login response:', response.data);
+      
       if (response.data.success) {
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-        setToken(response.data.token);
-        setUser(response.data.user);
+        const newToken = response.data.token;
+        const userData = response.data.user;
+        
+        localStorage.setItem('token', newToken);
+        localStorage.setItem('user', JSON.stringify(userData));
+        
+        setToken(newToken);
+        setUser(userData);
+        
+        console.log('✅ Login successful, token saved');
         return { success: true };
       }
       return { success: false, message: response.data.message };
     } catch (error) {
+      console.error('Login error:', error);
       return { success: false, message: error.response?.data?.message || 'Login failed' };
     }
   };
@@ -40,15 +49,24 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       const response = await authAPI.register(userData);
+      console.log('Register response:', response.data);
+      
       if (response.data.success) {
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-        setToken(response.data.token);
-        setUser(response.data.user);
+        const newToken = response.data.token;
+        const newUser = response.data.user;
+        
+        localStorage.setItem('token', newToken);
+        localStorage.setItem('user', JSON.stringify(newUser));
+        
+        setToken(newToken);
+        setUser(newUser);
+        
+        console.log('✅ Registration successful, token saved');
         return { success: true };
       }
       return { success: false, message: response.data.message };
     } catch (error) {
+      console.error('Registration error:', error);
       return { success: false, message: error.response?.data?.message || 'Registration failed' };
     }
   };
@@ -58,6 +76,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('user');
     setToken(null);
     setUser(null);
+    console.log('👋 User logged out');
   };
 
   const value = {

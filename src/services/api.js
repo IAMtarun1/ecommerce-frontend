@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
 
-console.log('🔧 API URL:', API_URL);
+console.log('🚀 API URL configured as:', API_URL);
 
 const api = axios.create({
   baseURL: API_URL,
@@ -17,9 +17,12 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
+    
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+      console.log(`🔑 Token added for: ${config.url}`);
     }
+    
     console.log(`📤 ${config.method?.toUpperCase()} ${config.url}`);
     return config;
   },
@@ -29,7 +32,7 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor for error handling
+// Response interceptor
 api.interceptors.response.use(
   (response) => {
     console.log(`📥 ${response.status} ${response.config.url}`);
@@ -38,15 +41,42 @@ api.interceptors.response.use(
   (error) => {
     if (error.response) {
       console.error(`❌ API Error ${error.response.status}:`, error.response.data);
+      if (error.response.status === 401) {
+        console.log('Token expired. Redirecting to login...');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      }
     } else if (error.request) {
-      console.error('❌ No response from server. Is backend running?');
-      console.error('   Backend should be at:', API_URL);
-    } else {
-      console.error('❌ Error:', error.message);
+      console.error('❌ No response from server');
     }
     return Promise.reject(error);
   }
 );
+
+// Cart endpoints
+export const cartAPI = {
+  getCart: () => {
+    console.log('🛒 Fetching cart...');
+    return api.get('/cart');
+  },
+  addItem: (productId, quantity) => {
+    console.log(`➕ Adding product ${productId} to cart...`);
+    return api.post('/cart/add', { productId, quantity });
+  },
+  updateItem: (itemId, quantity) => {
+    console.log(`🔄 Updating cart item ${itemId} to quantity ${quantity}`);
+    return api.put(`/cart/items/${itemId}?quantity=${quantity}`);
+  },
+  removeItem: (itemId) => {
+    console.log(`❌ Removing cart item ${itemId}`);
+    return api.delete(`/cart/items/${itemId}`);
+  },
+  clearCart: () => {
+    console.log('🗑️ Clearing cart');
+    return api.delete('/cart/clear');
+  },
+};
 
 // Auth endpoints
 export const authAPI = {
@@ -58,43 +88,13 @@ export const authAPI = {
 // Product endpoints
 export const productAPI = {
   getAll: () => {
-    console.log('Fetching products...');
-    return api.get('/products').then(response => {
-      // Ensure we always return an array
-      if (!response.data) {
-        return { ...response, data: [] };
-      }
-      return response;
-    });
+    console.log('🛍️ Fetching products...');
+    return api.get('/products');
   },
   getById: (id) => api.get(`/products/${id}`),
   create: (product) => api.post('/products', product),
   update: (id, product) => api.put(`/products/${id}`, product),
   delete: (id) => api.delete(`/products/${id}`),
-};
-
-// Cart endpoints
-export const cartAPI = {
-  getCart: () => {
-    console.log('Fetching cart...');
-    return api.get('/cart');
-  },
-  addItem: (productId, quantity) => {
-    console.log(`Adding product ${productId} to cart...`);
-    return api.post('/cart/add', { productId, quantity });
-  },
-  updateItem: (itemId, quantity) => {
-    console.log(`Updating cart item ${itemId} to quantity ${quantity}`);
-    return api.put(`/cart/items/${itemId}?quantity=${quantity}`);
-  },
-  removeItem: (itemId) => {
-    console.log(`Removing cart item ${itemId}`);
-    return api.delete(`/cart/items/${itemId}`);
-  },
-  clearCart: () => {
-    console.log('Clearing cart');
-    return api.delete('/cart/clear');
-  },
 };
 
 // Order endpoints
