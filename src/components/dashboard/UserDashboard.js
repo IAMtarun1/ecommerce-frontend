@@ -3,9 +3,10 @@ import { Container, Row, Col, Card, Tabs, Tab, Button, Form, Alert, Badge, Table
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { orderAPI, authAPI, cartAPI } from '../../services/api';
-import { showSuccess, showError, showLoading } from '../../utils/toast';
+import { showSuccess, showError, showLoading, showInfo } from '../../utils/toast';
 import { FaBox, FaMapMarkerAlt, FaCreditCard, FaUserCog, FaHeart, FaEye, FaTrash, FaPlus } from 'react-icons/fa';
 import { motion } from 'framer-motion';
+import toast from 'react-hot-toast';
 
 const UserDashboard = () => {
   const { user, isAuthenticated } = useAuth();
@@ -144,7 +145,6 @@ const UserDashboard = () => {
   };
 
   const handleAddPaymentMethod = () => {
-    // In production, integrate with Stripe Elements
     showInfo('Payment method integration coming soon');
   };
 

@@ -57,7 +57,7 @@ const toastStyles = {
 };
 
 // Function to show loading toast that transforms
-export const showLoadingToast = (loadingMessage, successMessage, errorMessage, asyncFunction) => {
+export const showLoadingToast = (loadingMessage, successMessageOrFn, errorMessageOrFn, asyncFunction) => {
   // Show loading toast
   const toastId = toast.loading(loadingMessage, {
     position: 'top-center',
@@ -69,6 +69,11 @@ export const showLoadingToast = (loadingMessage, successMessage, errorMessage, a
   // Execute async function
   asyncFunction()
     .then((result) => {
+      // Get success message (either string or function that returns string)
+      const successMessage = typeof successMessageOrFn === 'function' 
+        ? successMessageOrFn(result) 
+        : successMessageOrFn;
+      
       // Transform to success
       toast.success(successMessage, {
         id: toastId,
@@ -80,8 +85,13 @@ export const showLoadingToast = (loadingMessage, successMessage, errorMessage, a
       return result;
     })
     .catch((error) => {
+      // Get error message (either string or function that returns string)
+      const errorMessage = typeof errorMessageOrFn === 'function' 
+        ? errorMessageOrFn(error) 
+        : errorMessageOrFn || 'Operation failed';
+      
       // Transform to error
-      toast.error(errorMessage || error.message || 'Operation failed', {
+      toast.error(errorMessage, {
         id: toastId,
         duration: 4000,
         position: 'top-center',

@@ -3,7 +3,7 @@ import { Container, Table, Button, Row, Col } from 'react-bootstrap';
 import { cartAPI, orderAPI } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { showSuccess, showError } from '../../utils/toast';
+import { showSuccess, showError, showLoading } from '../../utils/toast';
 import ShippingModal from './ShippingModal';
 import toast from 'react-hot-toast';
 
@@ -116,9 +116,23 @@ const Cart = () => {
   if (!cart.items || cart.items.length === 0) {
     return (
       <Container className="mt-5 text-center">
-        <div className="glass-card p-5">
-          <h3>Your cart is empty</h3>
-          <p className="text-muted mt-2">Looks like you haven't added anything yet!</p>
+        <div style={{
+          background: 'rgba(255, 255, 255, 0.95)',
+          backdropFilter: 'blur(10px)',
+          borderRadius: '24px',
+          padding: '48px 32px',
+          maxWidth: '500px',
+          margin: '0 auto',
+          boxShadow: '0 20px 35px -10px rgba(0, 0, 0, 0.2)',
+          border: '1px solid rgba(255, 255, 255, 0.3)'
+        }}>
+          <div style={{ fontSize: '64px', marginBottom: '20px' }}>🛒</div>
+          <h3 style={{ fontSize: '28px', fontWeight: '700', color: '#1a1a2e', marginBottom: '12px' }}>
+            Your cart is empty
+          </h3>
+          <p style={{ fontSize: '16px', color: '#4b5563', marginBottom: '24px' }}>
+            Looks like you haven't added anything yet!
+          </p>
           <Button onClick={() => navigate('/products')} className="btn-gradient mt-3 px-4 py-2">
             Continue Shopping
           </Button>

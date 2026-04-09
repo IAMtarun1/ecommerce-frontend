@@ -38,15 +38,29 @@ const ProductDetail = () => {
       return;
     }
 
+    if (product.stockQuantity <= 0) {
+      showError(`${product.name} is out of stock!`);
+      return;
+    }
+
     setAddingToCart(true);
     
     try {
       await showLoadingToast(
         `Adding ${product.name} to cart...`,
         `${product.name} added to cart`,
-        'Failed to add to cart',
+        (error) => {
+          if (error.response?.status === 400) {
+            return error.response?.data?.message || `Sorry, ${product.name} is out of stock!`;
+          }
+          return 'Failed to add to cart';
+        },
         () => cartAPI.addItem(product.id, 1)
       );
+      
+      // Refresh product to update stock display
+      await fetchProduct();
+      
     } catch (err) {
       console.error('Error adding to cart:', err);
     } finally {
@@ -116,9 +130,10 @@ const ProductDetail = () => {
               size="lg"
               onClick={addToCart}
               disabled={product.stockQuantity === 0 || addingToCart}
-              className="btn-gradient mt-3 px-4 py-2"
+              className={`btn-gradient mt-3 px-4 py-2 ${product.stockQuantity === 0 ? 'disabled-btn' : ''}`}
+              style={{ opacity: product.stockQuantity === 0 ? 0.6 : 1 }}
             >
-              {addingToCart ? 'Adding to Cart...' : 'Add to Cart'}
+              {product.stockQuantity === 0 ? 'Out of Stock' : (addingToCart ? 'Adding to Cart...' : 'Add to Cart')}
             </Button>
             <Button 
               variant="outline-secondary" 
