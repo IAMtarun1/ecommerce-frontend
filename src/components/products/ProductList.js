@@ -214,8 +214,7 @@ const ProductList = () => {
                     onClick={() => handleProductClick(product.id)}
                   >
                     <Card.Img 
-                      variant="top" 
-                      src={product.imageUrl || `https://placehold.co/300x200/667eea/white?text=${encodeURIComponent(product.name.substring(0, 20))}`}
+                      src={product.imageUrl || `https://placehold.co/300x200/0f172a/00f2fe?text=${encodeURIComponent(product.name.substring(0, 20))}`}
                       style={{ height: '200px', objectFit: 'cover' }}
                     />
                     <Card.Body>

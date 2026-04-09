@@ -92,7 +92,7 @@ const ProductFilters = ({ filters, setFilters, onApply, onClear, categories }) =
           <input
             type="text"
             className="search-input-field"
-            placeholder="Search products by name, description, or SKU..."
+            placeholder="Search products"
             value={localFilters.search}
             onChange={(e) => handleFilterChange('search', e.target.value)}
             onKeyPress={handleKeyPress}

@@ -1,0 +1,132 @@
+/* Modern Dark Theme Overrides */
+:root {
+  --bg-dark: #070B14; /* Deep sleek dark */
+  --accent-cyan: #00f2fe;
+  --accent-indigo: #4facfe;
+  --glass-bg: rgba(16, 23, 41, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+}
+
+body {
+  background: var(--bg-dark) !important;
+  color: var(--text-primary) !important;
+}
+
+body::before {
+  display: none !important; /* Remove old background pattern */
+}
+
+/* Glassmorphism Styles */
+.glass-card, .product-card, .table, .stat-card, .order-summary, .glass-panel {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
+  color: var(--text-primary) !important;
+}
+
+.product-card:hover {
+  transform: translateY(-8px) scale(1.02) !important;
+  box-shadow: 0 16px 40px -8px rgba(0, 242, 254, 0.2) !important;
+  border-color: rgba(0, 242, 254, 0.3) !important;
+}
+
+.product-card .card-body .text-muted {
+  color: var(--text-secondary) !important;
+}
+
+/* Navbar overrides */
+.navbar-modern, .navbar-custom {
+  background: rgba(10, 15, 26, 0.8) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border-bottom: 1px solid var(--glass-border) !important;
+  position: sticky !important;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Hero section */
+.hero-section {
+  background: none !important; /* Remove gradient */
+  padding: 120px 0 !important;
+  border-radius: 0 !important;
+}
+
+.hero-section::before {
+  display: none !important;
+}
+
+/* Button overrides */
+.btn-gradient {
+  background: linear-gradient(135deg, var(--accent-indigo) 0%, var(--accent-cyan) 100%) !important;
+  color: #000 !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3) !important;
+}
+
+.btn-gradient:hover {
+  box-shadow: 0 8px 25px rgba(0, 242, 254, 0.5) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Pagination overrides */
+.pagination .page-item .page-link {
+  background: var(--glass-bg) !important;
+  border-color: var(--glass-border) !important;
+  color: var(--text-primary) !important;
+}
+
+.pagination .page-item.active .page-link {
+  background: var(--accent-indigo) !important;
+  border-color: var(--accent-indigo) !important;
+  color: #fff !important;
+}
+
+.pagination .page-item.disabled .page-link {
+  background: rgba(255,255,255,0.05) !important;
+  color: var(--text-secondary) !important;
+  border-color: var(--glass-border) !important;
+}
+
+/* Texts and Headings */
+h1, h2, h3, h4, h5, h6, .card-title {
+  color: var(--text-primary) !important;
+}
+
+.text-primary {
+  color: var(--accent-cyan) !important;
+}
+
+.auth-container {
+  background: var(--bg-dark) !important;
+}
+
+.auth-form-section {
+  background: transparent !important;
+}
+
+.form-control, .form-select, .form-control-custom {
+  background: rgba(255,255,255,0.05) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--glass-border) !important;
+}
+
+.form-control:focus, .form-select:focus, .form-control-custom:focus {
+  border-color: var(--accent-cyan) !important;
+  box-shadow: 0 0 0 3px rgba(0, 242, 254, 0.1) !important;
+  background: rgba(255,255,255,0.1) !important;
+  color: var(--text-primary) !important;
+}
+
+.form-group label {
+  color: var(--text-primary) !important;
+}
+
+/* Fix product list filters text color */
+.text-dark {
+  color: var(--text-primary) !important;
+}

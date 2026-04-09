@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { showLoadingToast } from '../../utils/toast';
@@ -61,160 +60,153 @@ const Register = () => {
   };
 
   return (
-    <div className="auth-container">
-      <Container fluid className="h-100">
-        <Row className="h-100 g-0">
-          {/* Left Side - Brand Section */}
-          <Col lg={6} className="auth-brand-section">
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-              className="brand-content"
-            >
-              <div className="brand-logo">
-                <FaShoppingBag size={48} className="text-white" />
-                <h1 className="brand-name">ShopHub</h1>
+    <div className="auth-container-modern">
+      <div className="auth-grid">
+        {/* Left Side - Brand Section */}
+        <div className="auth-brand-side">
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+            className="brand-content-modern"
+          >
+            <div className="brand-logo-modern">
+              <FaShoppingBag size={42} />
+              <h1>ShopHub</h1>
+            </div>
+            <h2>Join our community</h2>
+            <p>Create an account to enjoy exclusive deals and faster checkout</p>
+            <div className="brand-features-modern">
+              <div className="feature">
+                <span>✓</span> Exclusive member discounts
               </div>
-              <h2 className="brand-tagline">Join our community</h2>
-              <p className="brand-description">
-                Create an account to enjoy exclusive deals and faster checkout
+              <div className="feature">
+                <span>✓</span> Early access to sales
+              </div>
+              <div className="feature">
+                <span>✓</span> Free shipping on orders over $50
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Right Side - Form Section */}
+        <div className="auth-form-side">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="form-container-modern"
+          >
+            <div className="form-header-modern">
+              <h2>Create account</h2>
+              <p>
+                Already have an account?{' '}
+                <Link to="/login" className="auth-link-modern">
+                  Log in
+                </Link>
               </p>
-              <div className="brand-features">
-                <div className="feature-item">
-                  <span className="feature-icon">✓</span>
-                  <span>Exclusive member discounts</span>
-                </div>
-                <div className="feature-item">
-                  <span className="feature-icon">✓</span>
-                  <span>Early access to sales</span>
-                </div>
-                <div className="feature-item">
-                  <span className="feature-icon">✓</span>
-                  <span>Free shipping on orders over $50</span>
-                </div>
+            </div>
+
+            {error && (
+              <div className="alert-modern alert-error-modern">
+                {error}
               </div>
-            </motion.div>
-          </Col>
+            )}
 
-          {/* Right Side - Form Section */}
-          <Col lg={6} className="auth-form-section">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="form-container"
-            >
-              <div className="form-header">
-                <h2>Create an account</h2>
-                <p className="text-muted">
-                  Already have an account?{' '}
-                  <Link to="/login" className="auth-link">
-                    Log in
-                  </Link>
-                </p>
-              </div>
-
-              {error && (
-                <div className="alert-custom alert-error">
-                  {error}
-                </div>
-              )}
-
-              <Form onSubmit={handleSubmit}>
-                <div className="row">
-                  <div className="col-md-6">
-                    <Form.Group className="form-group">
-                      <Form.Label>First name</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="firstName"
-                        placeholder="First name"
-                        value={formData.firstName}
-                        onChange={handleChange}
-                        required
-                        className="form-control-custom"
-                      />
-                    </Form.Group>
-                  </div>
-                  <div className="col-md-6">
-                    <Form.Group className="form-group">
-                      <Form.Label>Last name</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="lastName"
-                        placeholder="Last name"
-                        value={formData.lastName}
-                        onChange={handleChange}
-                        required
-                        className="form-control-custom"
-                      />
-                    </Form.Group>
+            <form onSubmit={handleSubmit}>
+              <div className="row-modern">
+                <div className="col-modern">
+                  <div className="input-group-modern">
+                    <label>First name</label>
+                    <input
+                      type="text"
+                      name="firstName"
+                      placeholder="John"
+                      value={formData.firstName}
+                      onChange={handleChange}
+                      required
+                      className="input-modern"
+                    />
                   </div>
                 </div>
+                <div className="col-modern">
+                  <div className="input-group-modern">
+                    <label>Last name</label>
+                    <input
+                      type="text"
+                      name="lastName"
+                      placeholder="Doe"
+                      value={formData.lastName}
+                      onChange={handleChange}
+                      required
+                      className="input-modern"
+                    />
+                  </div>
+                </div>
+              </div>
 
-                <Form.Group className="form-group">
-                  <Form.Label>Email</Form.Label>
-                  <Form.Control
-                    type="email"
-                    name="email"
-                    placeholder="Enter your email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="form-control-custom"
-                  />
-                </Form.Group>
+              <div className="input-group-modern">
+                <label>Email address</label>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="name@example.com"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  className="input-modern"
+                />
+              </div>
 
-                <Form.Group className="form-group">
-                  <Form.Label>Password</Form.Label>
-                  <Form.Control
-                    type="password"
-                    name="password"
-                    placeholder="Create a password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
-                    className="form-control-custom"
-                  />
-                </Form.Group>
+              <div className="input-group-modern">
+                <label>Password</label>
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Create a password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  className="input-modern"
+                />
+              </div>
 
-                <Form.Group className="form-group-checkbox">
-                  <Form.Check
+              <div className="checkbox-group-modern">
+                <label className="checkbox-label">
+                  <input
                     type="checkbox"
-                    id="agreeTerms"
-                    label="I agree to the Terms & Conditions"
                     checked={agreeTerms}
                     onChange={(e) => setAgreeTerms(e.target.checked)}
-                    className="checkbox-custom"
                   />
-                </Form.Group>
-
-                <Button 
-                  type="submit" 
-                  disabled={loading}
-                  className="btn-submit"
-                >
-                  {loading ? 'Creating account...' : 'Create account'}
-                </Button>
-              </Form>
-
-              <div className="divider">
-                <span>Or register with</span>
+                  <span>I agree to the Terms & Conditions</span>
+                </label>
               </div>
 
-              <div className="social-buttons">
-                <Button variant="outline-secondary" className="social-btn">
-                  <FaGoogle className="me-2" /> Google
-                </Button>
-                <Button variant="outline-secondary" className="social-btn">
-                  <FaApple className="me-2" /> Apple
-                </Button>
-              </div>
-            </motion.div>
-          </Col>
-        </Row>
-      </Container>
+              <button 
+                type="submit" 
+                disabled={loading}
+                className="submit-btn-modern"
+              >
+                {loading ? 'Creating account...' : 'Create account'}
+              </button>
+            </form>
+
+            <div className="divider-modern">
+              <span>Or register with</span>
+            </div>
+
+            <div className="social-buttons-modern">
+              <button className="social-btn-modern">
+                <FaGoogle /> Google
+              </button>
+              <button className="social-btn-modern">
+                <FaApple /> Apple
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      </div>
     </div>
   );
 };

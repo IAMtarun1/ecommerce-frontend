@@ -42,10 +42,14 @@ const Hero = () => {
               className="text-center"
             >
               <img 
-                src="https://placehold.co/500x400/4F46E5/white?text=Shopping" 
+                src="/hero-image.png" 
                 alt="Shopping"
                 className="img-fluid"
-                style={{ borderRadius: '30px' }}
+                style={{ 
+                  borderRadius: '30px', 
+                  boxShadow: '0 0 40px rgba(0, 242, 254, 0.3)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)'
+                }}
               />
             </motion.div>
           </Col>
