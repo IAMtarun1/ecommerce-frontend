@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { authAPI } from '../services/api';
+import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
 
@@ -19,6 +20,27 @@ export const AuthProvider = ({ children }) => {
       }
     }
     setLoading(false);
+  }, [token]);
+
+  // Check token validity periodically
+  useEffect(() => {
+    if (!token) return;
+
+    const checkTokenValidity = async () => {
+      try {
+        // Make a lightweight request to check if token is still valid
+        await authAPI.checkEmail('dummy@test.com');
+      } catch (error) {
+        if (error.response?.status === 401) {
+          console.log('Token expired during periodic check');
+          logout();
+        }
+      }
+    };
+
+    // Check token every 5 minutes
+    const interval = setInterval(checkTokenValidity, 5 * 60 * 1000);
+    return () => clearInterval(interval);
   }, [token]);
 
   const login = async (email, password) => {

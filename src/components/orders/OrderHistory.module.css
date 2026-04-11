@@ -1,0 +1,168 @@
+.container {
+  margin-top: 2rem;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 1.5rem;
+}
+
+/* Loading State */
+.loadingContainer {
+  text-align: center;
+  margin-top: 3rem;
+}
+
+.loadingText {
+  margin-top: 0.75rem;
+  color: white;
+}
+
+/* Error State */
+.errorContainer {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background: #1a1a2e;
+  border-radius: 20px;
+  text-align: center;
+  border: 1px solid #2d2d44;
+}
+
+.errorText {
+  color: #ef4444;
+  margin: 0;
+}
+
+/* Empty State */
+.emptyContainer {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 3rem;
+  background: #1a1a2e;
+  border-radius: 24px;
+  text-align: center;
+  border: 1px solid #2d2d44;
+}
+
+.emptyTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 0.5rem;
+}
+
+.emptyMessage {
+  color: #94a3b8;
+  margin-top: 0.5rem;
+}
+
+.browseBtn {
+  margin-top: 0.75rem;
+  padding: 0.5rem 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 40px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.browseBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+}
+
+/* Card Container */
+.cardContainer {
+  background: #1a1a2e;
+  border-radius: 20px;
+  padding: 1.5rem;
+  border: 1px solid #2d2d44;
+}
+
+/* Table Styles */
+.table {
+  background: #1a1a2e;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.table th {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 12px;
+  border: none;
+  font-weight: 600;
+}
+
+.table td {
+  color: #cbd5e1;
+  padding: 12px;
+  vertical-align: middle;
+  border-bottom-color: #2d2d44;
+}
+
+.tableRow {
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+}
+
+.tableRow:hover {
+  background: rgba(102, 126, 234, 0.05);
+  border-left-color: #667eea;
+}
+
+.orderNumber {
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+.totalAmount {
+  font-weight: 700;
+  color: #667eea;
+}
+
+.cancelBtn {
+  border-radius: 20px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  border: 1px solid #ef4444;
+  background: transparent;
+  color: #ef4444;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancelBtn:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.1);
+  transform: scale(1.05);
+}
+
+.cancelBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .title {
+    font-size: 1.5rem;
+  }
+  
+  .cardContainer {
+    padding: 1rem;
+  }
+  
+  .emptyContainer {
+    padding: 2rem;
+    margin: 0 1rem;
+  }
+  
+  .emptyTitle {
+    font-size: 1.25rem;
+  }
+}

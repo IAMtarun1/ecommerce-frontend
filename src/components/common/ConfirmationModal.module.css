@@ -1,0 +1,145 @@
+/* Modal Content */
+.modalContent {
+  background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1a 100%);
+  border: 1px solid #2d2d44;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 30px 50px -20px rgba(0, 0, 0, 0.5);
+}
+
+/* Modal Body */
+.modalBody {
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Icon Container */
+.iconContainer {
+  margin-bottom: 1.5rem;
+}
+
+.iconDanger {
+  color: #ef4444;
+  font-size: 48px;
+}
+
+.iconSuccess {
+  color: #10b981;
+  font-size: 48px;
+}
+
+.iconWarning {
+  color: #f59e0b;
+  font-size: 48px;
+}
+
+/* Title */
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.75rem;
+}
+
+/* Message */
+.message {
+  color: #94a3b8;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+/* Button Container */
+.buttonContainer {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+/* Cancel Button */
+.cancelBtn {
+  padding: 0.5rem 1.5rem;
+  background: transparent;
+  border: 1px solid #2d2d44;
+  border-radius: 40px;
+  color: #cbd5e1;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cancelBtn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: #667eea;
+  color: white;
+}
+
+/* Confirm Button */
+.confirmBtn {
+  padding: 0.5rem 1.5rem;
+  border: none;
+  border-radius: 40px;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.confirmBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.confirmBtnDanger {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.confirmBtnDanger:hover {
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.confirmBtnSuccess {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.confirmBtnSuccess:hover {
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.confirmBtnWarning {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.confirmBtnWarning:hover {
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modalBody {
+    padding: 1.5rem;
+  }
+  
+  .title {
+    font-size: 1.25rem;
+  }
+  
+  .message {
+    font-size: 0.875rem;
+  }
+  
+  .buttonContainer {
+    flex-direction: column;
+  }
+  
+  .cancelBtn,
+  .confirmBtn {
+    width: 100%;
+    justify-content: center;
+  }
+}

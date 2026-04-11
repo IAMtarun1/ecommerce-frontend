@@ -13,6 +13,9 @@ const api = axios.create({
   withCredentials: false,
 });
 
+// Flag to prevent multiple redirects
+let isRedirecting = false;
+
 // Request interceptor to add token
 api.interceptors.request.use(
   (config) => {
@@ -32,7 +35,7 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor
+// Response interceptor for error handling
 api.interceptors.response.use(
   (response) => {
     console.log(`📥 ${response.status} ${response.config.url}`);
@@ -41,11 +44,26 @@ api.interceptors.response.use(
   (error) => {
     if (error.response) {
       console.error(`❌ API Error ${error.response.status}:`, error.response.data);
-      if (error.response.status === 401) {
-        console.log('Token expired. Redirecting to login...');
+      
+      // Handle 401 Unauthorized - token expired
+      if (error.response.status === 401 && !isRedirecting) {
+        isRedirecting = true;
+        console.log('Token expired or invalid. Redirecting to login...');
+        
+        // Clear local storage
         localStorage.removeItem('token');
         localStorage.removeItem('user');
+        
+        // Show message to user
+        const message = error.response.data?.message || 'Your session has expired. Please login again.';
+        
+        // Redirect to login page
         window.location.href = '/login';
+        
+        // Reset flag after redirect
+        setTimeout(() => {
+          isRedirecting = false;
+        }, 1000);
       }
     } else if (error.request) {
       console.error('❌ No response from server');

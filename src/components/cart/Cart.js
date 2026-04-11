@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Container, Table, Button, Row, Col } from 'react-bootstrap';
+import { Container, Table, Row, Col } from 'react-bootstrap';
 import { cartAPI, orderAPI } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { showSuccess, showError, showLoading } from '../../utils/toast';
+import { showSuccess, showError } from '../../utils/toast';
 import ShippingModal from './ShippingModal';
 import toast from 'react-hot-toast';
+import styles from './Cart.module.css';
 
 const Cart = () => {
   const [cart, setCart] = useState({ items: [], totalAmount: 0 });
@@ -106,9 +107,9 @@ const Cart = () => {
 
   if (loading) {
     return (
-      <Container className="text-center mt-5">
+      <Container className={styles.loadingContainer}>
         <div className="spinner-custom mx-auto"></div>
-        <p className="mt-3 text-white">Loading cart...</p>
+        <p className={styles.loadingText}>Loading cart...</p>
       </Container>
     );
   }
@@ -116,26 +117,15 @@ const Cart = () => {
   if (!cart.items || cart.items.length === 0) {
     return (
       <Container className="mt-5 text-center">
-        <div style={{
-          background: 'rgba(255, 255, 255, 0.95)',
-          backdropFilter: 'blur(10px)',
-          borderRadius: '24px',
-          padding: '48px 32px',
-          maxWidth: '500px',
-          margin: '0 auto',
-          boxShadow: '0 20px 35px -10px rgba(0, 0, 0, 0.2)',
-          border: '1px solid rgba(255, 255, 255, 0.3)'
-        }}>
-          <div style={{ fontSize: '64px', marginBottom: '20px' }}>🛒</div>
-          <h3 style={{ fontSize: '28px', fontWeight: '700', color: '#1a1a2e', marginBottom: '12px' }}>
-            Your cart is empty
-          </h3>
-          <p style={{ fontSize: '16px', color: '#4b5563', marginBottom: '24px' }}>
+        <div className={styles.emptyCart}>
+          <div className={styles.emptyIcon}>🛒</div>
+          <h3 className={styles.emptyTitle}>Cart is Empty</h3>
+          <p className={styles.emptyMessage}>
             Looks like you haven't added anything yet!
           </p>
-          <Button onClick={() => navigate('/products')} className="btn-gradient mt-3 px-4 py-2">
+          <button onClick={() => navigate('/products')} className={styles.continueBtn}>
             Continue Shopping
-          </Button>
+          </button>
         </div>
       </Container>
     );
@@ -143,11 +133,11 @@ const Cart = () => {
 
   return (
     <>
-      <Container className="mt-4">
-        <h1 className="mb-4 text-white fw-bold">Shopping Cart</h1>
-        <div className="glass-card p-4">
+      <Container className={styles.container}>
+        <h1 className={styles.title}>Shopping Cart</h1>
+        <div className={styles.cartContent}>
           <div className="table-responsive">
-            <Table hover responsive className="align-middle mb-0">
+            <Table hover responsive className={styles.table}>
               <thead>
                 <tr>
                   <th>Product</th>
@@ -159,33 +149,31 @@ const Cart = () => {
               </thead>
               <tbody>
                 {cart.items.map((item) => (
-                  <tr key={item.id} className="cart-item">
+                  <tr key={item.id} className={styles.cartItem}>
                     <td>
-                      <div className="fw-bold">{item.productName}</div>
-                      <small className="text-muted">Cart Item ID: {item.id}</small>
+                      <div className={styles.productName}>{item.productName}</div>
+                      <small className={styles.productId}>ID: {item.id}</small>
                     </td>
-                    <td>${item.price}</td>
-                    <td style={{ width: '120px' }}>
+                    <td className={styles.price}>${item.price}</td>
+                    <td>
                       <input
                         type="number"
                         value={item.quantity}
                         onChange={(e) => updateQuantity(item.id, parseInt(e.target.value), item.productName)}
                         min="1"
-                        className="form-control form-control-sm"
+                        className={styles.quantityInput}
                         disabled={updatingItem === item.id}
                       />
                     </td>
-                    <td className="fw-bold text-primary">${item.subtotal}</td>
+                    <td className={styles.subtotal}>${item.subtotal}</td>
                     <td>
-                      <Button 
-                        variant="outline-danger" 
-                        size="sm"
+                      <button 
+                        className={styles.removeBtn}
                         onClick={() => removeItem(item.id, item.productName)}
                         disabled={updatingItem === item.id}
-                        className="rounded-pill"
                       >
                         {updatingItem === item.id ? '...' : 'Remove'}
-                      </Button>
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -195,31 +183,29 @@ const Cart = () => {
           
           <Row className="mt-4">
             <Col md={{ span: 6, offset: 6 }}>
-              <div className="order-summary p-4">
-                <h4 className="mb-3 fw-bold">Order Summary</h4>
+              <div className={styles.summary}>
+                <h4 className={styles.summaryTitle}>Order Summary</h4>
                 <hr />
-                <div className="d-flex justify-content-between mb-3">
+                <div className={styles.summaryRow}>
                   <span>Subtotal:</span>
-                  <span className="fw-bold">${cart.totalAmount}</span>
+                  <span>${cart.totalAmount}</span>
                 </div>
-                <div className="d-flex justify-content-between mb-3">
+                <div className={styles.summaryRow}>
                   <span>Shipping:</span>
                   <span className="text-success">Free</span>
                 </div>
                 <hr />
-                <div className="d-flex justify-content-between mb-4">
-                  <strong className="fs-5">Total:</strong>
-                  <strong className="text-primary fs-3">${cart.totalAmount}</strong>
+                <div className={styles.summaryTotal}>
+                  <span className={styles.totalLabel}>Total:</span>
+                  <span className={styles.totalAmount}>${cart.totalAmount}</span>
                 </div>
-                <Button 
-                  variant="success" 
-                  size="lg" 
+                <button 
+                  className={styles.checkoutBtn}
                   onClick={handleCheckoutClick}
                   disabled={checkoutLoading}
-                  className="w-100 btn-gradient"
                 >
                   {checkoutLoading ? 'Processing...' : 'Proceed to Checkout'}
-                </Button>
+                </button>
               </div>
             </Col>
           </Row>

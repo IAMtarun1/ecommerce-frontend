@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Button, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Button, Alert, Card, Badge } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 import { productAPI, cartAPI } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { showLoadingToast, showError } from '../../utils/toast';
 import ReviewList from '../reviews/ReviewList';
+import ImageGallery from '../common/ImageGallery';
+import styles from './ProductDetail.module.css';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -12,6 +14,7 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [addingToCart, setAddingToCart] = useState(false);
+  const [refreshReviews, setRefreshReviews] = useState(false);
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
@@ -58,7 +61,6 @@ const ProductDetail = () => {
         () => cartAPI.addItem(product.id, 1)
       );
       
-      // Refresh product to update stock display
       await fetchProduct();
       
     } catch (err) {
@@ -68,15 +70,25 @@ const ProductDetail = () => {
     }
   };
 
+  const handleReviewSubmitted = () => {
+    fetchProduct();
+    setRefreshReviews(!refreshReviews);
+  };
+
   const getPlaceholderImage = () => {
     return `https://placehold.co/500x500/667eea/white?text=${encodeURIComponent(product?.name?.substring(0, 20) || 'Product')}`;
   };
 
+  // Prepare images array
+  const productImages = product?.images && product.images.length > 0 
+    ? product.images 
+    : (product?.imageUrl ? [product.imageUrl] : []);
+
   if (loading) {
     return (
-      <Container className="text-center mt-5">
+      <Container className={styles.loadingContainer}>
         <div className="spinner-custom mx-auto"></div>
-        <p className="mt-3 text-white">Loading product details...</p>
+        <p className={styles.loadingText}>Loading product details...</p>
       </Container>
     );
   }
@@ -98,58 +110,77 @@ const ProductDetail = () => {
   }
 
   return (
-    <Container className="mt-4">
-      <Row>
-        <Col md={6}>
-          <img 
-            src={product.imageUrl || getPlaceholderImage()} 
-            alt={product.name}
-            className="img-fluid rounded-4 shadow-lg"
-            style={{ width: '100%', height: 'auto' }}
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src = getPlaceholderImage();
-            }}
-          />
-        </Col>
-        <Col md={6}>
-          <div className="glass-card p-4">
-            <h1 className="fw-bold">{product.name}</h1>
-            <h3 className="text-primary mt-3">${product.price}</h3>
-            <p className="text-muted mt-2">SKU: {product.sku}</p>
-            <p className="mt-3">{product.description}</p>
-            <p className="mt-3">
-              {product.stockQuantity > 0 ? (
-                <span className="text-success fw-bold">In Stock: {product.stockQuantity}</span>
-              ) : (
-                <span className="text-danger fw-bold">Out of Stock</span>
-              )}
-            </p>
-            <Button 
-              variant="primary" 
-              size="lg"
-              onClick={addToCart}
-              disabled={product.stockQuantity === 0 || addingToCart}
-              className={`btn-gradient mt-3 px-4 py-2 ${product.stockQuantity === 0 ? 'disabled-btn' : ''}`}
-              style={{ opacity: product.stockQuantity === 0 ? 0.6 : 1 }}
-            >
-              {product.stockQuantity === 0 ? 'Out of Stock' : (addingToCart ? 'Adding to Cart...' : 'Add to Cart')}
-            </Button>
-            <Button 
-              variant="outline-secondary" 
-              size="lg"
-              onClick={() => navigate('/products')}
-              className="mt-3 ms-2 px-4 py-2"
-            >
-              Continue Shopping
-            </Button>
-          </div>
-        </Col>
-      </Row>
+    <Container className={styles.container}>
+      <Card className={styles.card}>
+        <Row className="g-0">
+          {/* Product Image Column */}
+          <Col md={6}>
+            <ImageGallery 
+              images={productImages}
+              productName={product.name}
+              defaultImage={getPlaceholderImage()}
+            />
+          </Col>
+          
+          {/* Product Details Column */}
+          <Col md={6}>
+            <Card.Body className={styles.content}>
+              <h1 className={styles.title}>
+                {product.name}
+              </h1>
+              
+              <h2 className={styles.price}>
+                ${product.price}
+              </h2>
+              
+              <p className={styles.sku}>
+                SKU: {product.sku}
+              </p>
+              
+              <p className={styles.description}>
+                {product.description}
+              </p>
+              
+              <div>
+                {product.stockQuantity > 0 ? (
+                  <Badge bg="success" className={`${styles.stockBadge} ${styles.inStock}`}>
+                    ✓ In Stock: {product.stockQuantity}
+                  </Badge>
+                ) : (
+                  <Badge bg="danger" className={`${styles.stockBadge} ${styles.outOfStock}`}>
+                    ✗ Out of Stock
+                  </Badge>
+                )}
+              </div>
+              
+              <div className={styles.buttons}>
+                <button 
+                  className={styles.addToCartBtn}
+                  onClick={addToCart}
+                  disabled={product.stockQuantity === 0 || addingToCart}
+                >
+                  {product.stockQuantity === 0 ? 'Out of Stock' : (addingToCart ? 'Adding...' : 'Add to Cart')}
+                </button>
+                
+                <button 
+                  className={styles.continueBtn}
+                  onClick={() => navigate('/products')}
+                >
+                  Continue Shopping
+                </button>
+              </div>
+            </Card.Body>
+          </Col>
+        </Row>
+      </Card>
       
       {/* Reviews Section */}
-      <div className="mt-5">
-        <ReviewList productId={product.id} />
+      <div className={styles.reviewsSection}>
+        <ReviewList 
+          productId={product.id} 
+          key={refreshReviews ? 'refresh' : 'initial'}
+          onReviewSubmitted={handleReviewSubmitted}
+        />
       </div>
     </Container>
   );

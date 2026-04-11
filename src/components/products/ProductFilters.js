@@ -3,6 +3,7 @@ import { Form, Button, Row, Col } from 'react-bootstrap';
 import { FaSearch, FaFilter, FaTimes } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';
+import styles from './ProductFilters.module.css';
 
 const ProductFilters = ({ filters, setFilters, onApply, onClear, categories }) => {
   const [showFilters, setShowFilters] = useState(false);
@@ -11,7 +12,6 @@ const ProductFilters = ({ filters, setFilters, onApply, onClear, categories }) =
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Get search params from URL
     const params = new URLSearchParams(location.search);
     const searchQuery = params.get('search') || '';
     
@@ -34,7 +34,6 @@ const ProductFilters = ({ filters, setFilters, onApply, onClear, categories }) =
     setFilters(localFilters);
     onApply(localFilters);
     
-    // Update URL with search query
     const params = new URLSearchParams(location.search);
     if (localFilters.search) {
       params.set('search', localFilters.search);
@@ -57,7 +56,6 @@ const ProductFilters = ({ filters, setFilters, onApply, onClear, categories }) =
     setFilters(clearedFilters);
     onClear();
     
-    // Clear URL params
     navigate({ search: '' }, { replace: true });
   };
 
@@ -84,14 +82,14 @@ const ProductFilters = ({ filters, setFilters, onApply, onClear, categories }) =
   ];
 
   return (
-    <div className="filters-container">
+    <div className={styles.container}>
       {/* Search Bar */}
-      <div className="search-bar-container">
-        <div className="search-input-wrapper">
-          <FaSearch className="search-icon" />
+      <div className={styles.searchBarContainer}>
+        <div className={styles.searchInputWrapper}>
+          <FaSearch className={styles.searchIcon} />
           <input
             type="text"
-            className="search-input-field"
+            className={styles.searchInput}
             placeholder="Search products"
             value={localFilters.search}
             onChange={(e) => handleFilterChange('search', e.target.value)}
@@ -99,7 +97,7 @@ const ProductFilters = ({ filters, setFilters, onApply, onClear, categories }) =
           />
           {localFilters.search && (
             <button 
-              className="clear-search"
+              className={styles.clearSearch}
               onClick={() => handleFilterChange('search', '')}
             >
               <FaTimes />
@@ -107,13 +105,13 @@ const ProductFilters = ({ filters, setFilters, onApply, onClear, categories }) =
           )}
         </div>
         <button 
-          className={`filter-toggle-btn ${showFilters ? 'active' : ''}`}
+          className={`${styles.filterToggleBtn} ${showFilters ? styles.filterToggleBtnActive : ''}`}
           onClick={() => setShowFilters(!showFilters)}
         >
           <FaFilter /> Filters
         </button>
         <button 
-          className="apply-search-btn"
+          className={styles.applySearchBtn}
           onClick={handleApply}
         >
           Search
@@ -124,7 +122,7 @@ const ProductFilters = ({ filters, setFilters, onApply, onClear, categories }) =
       <AnimatePresence>
         {showFilters && (
           <motion.div 
-            className="advanced-filters"
+            className={styles.advancedFilters}
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
@@ -134,11 +132,11 @@ const ProductFilters = ({ filters, setFilters, onApply, onClear, categories }) =
               {/* Category Filter */}
               <Col md={3}>
                 <Form.Group>
-                  <Form.Label className="filter-label">Category</Form.Label>
+                  <Form.Label className={styles.filterLabel}>Category</Form.Label>
                   <Form.Select
                     value={localFilters.category}
                     onChange={(e) => handleFilterChange('category', e.target.value)}
-                    className="filter-select"
+                    className={styles.filterSelect}
                   >
                     <option value="">All Categories</option>
                     {categories.map(cat => (
@@ -151,22 +149,22 @@ const ProductFilters = ({ filters, setFilters, onApply, onClear, categories }) =
               {/* Price Range */}
               <Col md={3}>
                 <Form.Group>
-                  <Form.Label className="filter-label">Price Range</Form.Label>
-                  <div className="price-inputs">
+                  <Form.Label className={styles.filterLabel}>Price Range</Form.Label>
+                  <div className={styles.priceInputs}>
                     <input
                       type="number"
                       placeholder="Min"
                       value={localFilters.minPrice}
                       onChange={(e) => handleFilterChange('minPrice', e.target.value)}
-                      className="price-input"
+                      className={styles.priceInput}
                     />
-                    <span className="price-separator">-</span>
+                    <span className={styles.priceSeparator}>-</span>
                     <input
                       type="number"
                       placeholder="Max"
                       value={localFilters.maxPrice}
                       onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
-                      className="price-input"
+                      className={styles.priceInput}
                     />
                   </div>
                 </Form.Group>
@@ -175,11 +173,11 @@ const ProductFilters = ({ filters, setFilters, onApply, onClear, categories }) =
               {/* Rating Filter */}
               <Col md={3}>
                 <Form.Group>
-                  <Form.Label className="filter-label">Customer Rating</Form.Label>
+                  <Form.Label className={styles.filterLabel}>Customer Rating</Form.Label>
                   <Form.Select
                     value={localFilters.rating}
                     onChange={(e) => handleFilterChange('rating', e.target.value)}
-                    className="filter-select"
+                    className={styles.filterSelect}
                   >
                     {ratingOptions.map(opt => (
                       <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -191,11 +189,11 @@ const ProductFilters = ({ filters, setFilters, onApply, onClear, categories }) =
               {/* Sort By */}
               <Col md={3}>
                 <Form.Group>
-                  <Form.Label className="filter-label">Sort By</Form.Label>
+                  <Form.Label className={styles.filterLabel}>Sort By</Form.Label>
                   <Form.Select
                     value={localFilters.sortBy}
                     onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-                    className="filter-select"
+                    className={styles.filterSelect}
                   >
                     {sortOptions.map(opt => (
                       <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -205,11 +203,11 @@ const ProductFilters = ({ filters, setFilters, onApply, onClear, categories }) =
               </Col>
             </Row>
 
-            <div className="filter-actions">
-              <Button variant="primary" onClick={handleApply} className="apply-filters-btn">
+            <div className={styles.filterActions}>
+              <Button variant="primary" onClick={handleApply} className={styles.applyFiltersBtn}>
                 Apply Filters
               </Button>
-              <Button variant="outline-secondary" onClick={handleClear} className="clear-filters-btn">
+              <Button variant="outline-secondary" onClick={handleClear} className={styles.clearFiltersBtn}>
                 Clear All
               </Button>
             </div>
@@ -219,10 +217,10 @@ const ProductFilters = ({ filters, setFilters, onApply, onClear, categories }) =
 
       {/* Active Filters Display */}
       {(localFilters.category || localFilters.minPrice || localFilters.maxPrice || localFilters.rating || localFilters.search) && (
-        <div className="active-filters">
-          <span className="active-filters-label">Active Filters:</span>
+        <div className={styles.activeFilters}>
+          <span className={styles.activeFiltersLabel}>Active Filters:</span>
           {localFilters.search && (
-            <span className="filter-tag">
+            <span className={styles.filterTag}>
               Search: {localFilters.search}
               <FaTimes onClick={() => {
                 handleFilterChange('search', '');
@@ -231,7 +229,7 @@ const ProductFilters = ({ filters, setFilters, onApply, onClear, categories }) =
             </span>
           )}
           {localFilters.category && (
-            <span className="filter-tag">
+            <span className={styles.filterTag}>
               Category: {localFilters.category}
               <FaTimes onClick={() => {
                 handleFilterChange('category', '');
@@ -240,7 +238,7 @@ const ProductFilters = ({ filters, setFilters, onApply, onClear, categories }) =
             </span>
           )}
           {localFilters.minPrice && (
-            <span className="filter-tag">
+            <span className={styles.filterTag}>
               Min: ${localFilters.minPrice}
               <FaTimes onClick={() => {
                 handleFilterChange('minPrice', '');
@@ -249,7 +247,7 @@ const ProductFilters = ({ filters, setFilters, onApply, onClear, categories }) =
             </span>
           )}
           {localFilters.maxPrice && (
-            <span className="filter-tag">
+            <span className={styles.filterTag}>
               Max: ${localFilters.maxPrice}
               <FaTimes onClick={() => {
                 handleFilterChange('maxPrice', '');
@@ -258,7 +256,7 @@ const ProductFilters = ({ filters, setFilters, onApply, onClear, categories }) =
             </span>
           )}
           {localFilters.rating && (
-            <span className="filter-tag">
+            <span className={styles.filterTag}>
               Rating: {localFilters.rating}+ ★
               <FaTimes onClick={() => {
                 handleFilterChange('rating', '');

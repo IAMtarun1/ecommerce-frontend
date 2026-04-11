@@ -1,0 +1,37 @@
+.card {
+  background: #1a1a2e;
+  border: 1px solid #2d2d44;
+  border-radius: 20px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-10px);
+  border-color: #667eea;
+}
+
+.title {
+  color: white;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.price {
+  color: #667eea;
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.stock {
+  font-size: 0.75rem;
+}
+
+.inStock {
+  color: #10b981;
+}
+
+.outOfStock {
+  color: #ef4444;
+}

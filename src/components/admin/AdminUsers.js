@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Badge, Spinner, Alert, Button } from 'react-bootstrap';
-import { authAPI } from '../../services/api';
+import { Spinner } from 'react-bootstrap';
+import styles from './AdminUsers.module.css';
 
 // Note: You'll need to add a user management endpoint in backend
 // For now, this is a placeholder component
@@ -30,56 +30,66 @@ const AdminUsers = () => {
     }
   };
 
-  const getRoleBadge = (role) => {
-    return <Badge bg={role === 'ADMIN' ? 'danger' : 'primary'}>{role}</Badge>;
+  const getRoleBadgeClass = (role) => {
+    return role === 'ADMIN' ? styles.badgeAdmin : styles.badgeCustomer;
   };
 
-  const getStatusBadge = (status) => {
-    return <Badge bg={status === 'ACTIVE' ? 'success' : 'secondary'}>{status}</Badge>;
+  const getStatusBadgeClass = (status) => {
+    return status === 'ACTIVE' ? styles.badgeActive : styles.badgeInactive;
   };
 
   if (loading) {
     return (
-      <div className="text-center mt-5">
-        <Spinner animation="border" />
-        <p>Loading users...</p>
+      <div className={styles.loadingContainer}>
+        <Spinner animation="border" variant="primary" />
+        <p className={styles.loadingText}>Loading users...</p>
       </div>
     );
   }
 
   return (
-    <div>
-      <div className="d-flex justify-content-between mb-4">
-        <h2>User Management</h2>
-        <Button variant="outline-primary" onClick={fetchUsers}>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h2 className={styles.title}>User Management</h2>
+        <button className={styles.refreshBtn} onClick={fetchUsers}>
           Refresh
-        </Button>
+        </button>
       </div>
 
-      {error && <Alert variant="danger">{error}</Alert>}
+      {error && <div className={styles.errorContainer}>{error}</div>}
 
-      <Table striped bordered hover responsive>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Email</th>
-            <th>Name</th>
-            <th>Role</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user) => (
-            <tr key={user.id}>
-              <td>{user.id}</td>
-              <td>{user.email}</td>
-              <td>{user.firstName} {user.lastName}</td>
-              <td>{getRoleBadge(user.role)}</td>
-              <td>{getStatusBadge(user.status)}</td>
+      <div className="table-responsive">
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Email</th>
+              <th>Name</th>
+              <th>Role</th>
+              <th>Status</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {users.map((user) => (
+              <tr key={user.id} className={styles.tableRow}>
+                <td className={styles.userId}>{user.id}</td>
+                <td className={styles.userEmail}>{user.email}</td>
+                <td className={styles.userName}>{user.firstName} {user.lastName}</td>
+                <td>
+                  <span className={`${styles.badge} ${getRoleBadgeClass(user.role)}`}>
+                    {user.role}
+                  </span>
+                </td>
+                <td>
+                  <span className={`${styles.badge} ${getStatusBadgeClass(user.status)}`}>
+                    {user.status}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Badge, Button, Modal, Form, Spinner, Alert } from 'react-bootstrap';
 import { orderAPI } from '../../services/api';
+import styles from './AdminOrders.module.css';
 
 const AdminOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -46,7 +47,7 @@ const AdminOrders = () => {
     try {
       await orderAPI.updateOrderStatus(orderId, newStatus);
       alert(`Order status updated to ${newStatus}`);
-      fetchOrders(); // Refresh orders
+      fetchOrders();
       setShowModal(false);
     } catch (err) {
       alert('Failed to update order status');
@@ -67,87 +68,89 @@ const AdminOrders = () => {
 
   if (loading) {
     return (
-      <div className="text-center mt-5">
-        <Spinner animation="border" />
-        <p>Loading orders...</p>
+      <div className={styles.loadingContainer}>
+        <Spinner animation="border" variant="primary" />
+        <p className={styles.loadingText}>Loading orders...</p>
       </div>
     );
   }
 
   if (error) {
-    return <Alert variant="danger">{error}</Alert>;
+    return <Alert variant="danger" className={styles.errorContainer}>{error}</Alert>;
   }
 
   return (
-    <div>
-      <div className="d-flex justify-content-between mb-4">
-        <h2>Order Management</h2>
-        <Button variant="outline-primary" onClick={fetchOrders}>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h2 className={styles.title}>Order Management</h2>
+        <button className={styles.refreshBtn} onClick={fetchOrders}>
           Refresh
-        </Button>
+        </button>
       </div>
 
       {orders.length === 0 ? (
-        <Alert variant="info">No orders found</Alert>
+        <div className={styles.emptyContainer}>
+          <p>No orders found</p>
+        </div>
       ) : (
-        <Table striped bordered hover responsive>
-          <thead>
-            <tr>
-              <th>Order #</th>
-              <th>Customer</th>
-              <th>Date</th>
-              <th>Items</th>
-              <th>Total</th>
-              <th>Status</th>
-              <th>Payment</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.map((order) => (
-              <tr key={order.id}>
-                <td>
-                  <code>{order.orderNumber}</code>
-                </td>
-                <td>
-                  <div>{order.userEmail}</div>
-                  <small className="text-muted">ID: {order.userId}</small>
-                </td>
-                <td>{new Date(order.createdAt).toLocaleDateString()}</td>
-                <td>{getTotalItems(order)} items</td>
-                <td><strong>${order.totalAmount?.toFixed(2)}</strong></td>
-                <td>{getStatusBadge(order.status)}</td>
-                <td>
-                  <Badge bg={order.paymentStatus === 'PAID' ? 'success' : 'warning'}>
-                    {order.paymentStatus || 'PENDING'}
-                  </Badge>
-                </td>
-                <td>
-                  <Button 
-                    variant="info" 
-                    size="sm" 
-                    onClick={() => handleViewOrder(order)}
-                    className="me-2"
-                  >
-                    View
-                  </Button>
-                </td>
+        <div className="table-responsive">
+          <table className={`table ${styles.table}`}>
+            <thead>
+              <tr>
+                <th>Order #</th>
+                <th>Customer</th>
+                <th>Date</th>
+                <th>Items</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Payment</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {orders.map((order) => (
+                <tr key={order.id} className={styles.tableRow}>
+                  <td>
+                    <code className={styles.orderCode}>{order.orderNumber}</code>
+                  </td>
+                  <td>
+                    <div className={styles.customerEmail}>{order.userEmail}</div>
+                    <div className={styles.customerId}>ID: {order.userId}</div>
+                  </td>
+                  <td>{new Date(order.createdAt).toLocaleDateString()}</td>
+                  <td>{getTotalItems(order)} items</td>
+                  <td className={styles.totalAmount}>${order.totalAmount?.toFixed(2)}</td>
+                  <td>{getStatusBadge(order.status)}</td>
+                  <td>
+                    <Badge bg={order.paymentStatus === 'PAID' ? 'success' : 'warning'}>
+                      {order.paymentStatus || 'PENDING'}
+                    </Badge>
+                  </td>
+                  <td>
+                    <button 
+                      className={styles.viewBtn}
+                      onClick={() => handleViewOrder(order)}
+                    >
+                      View
+                    </button>
+                   </td>
+                 </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {/* Order Details Modal */}
-      <Modal show={showModal} onHide={() => setShowModal(false)} size="lg">
-        <Modal.Header closeButton>
-          <Modal.Title>Order Details</Modal.Title>
+      <Modal show={showModal} onHide={() => setShowModal(false)} size="lg" contentClassName={styles.modalContent}>
+        <Modal.Header closeButton className={styles.modalHeader}>
+          <Modal.Title className={styles.modalTitle}>Order Details</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className={styles.modalBody}>
           {selectedOrder && (
             <div>
-              <h5>Order Information</h5>
-              <table className="table table-sm">
+              <h5 className={styles.sectionTitle}>Order Information</h5>
+              <table className={styles.infoTable}>
                 <tbody>
                   <tr>
                     <th>Order Number:</th>
@@ -156,59 +159,59 @@ const AdminOrders = () => {
                   <tr>
                     <th>Customer:</th>
                     <td>{selectedOrder.userEmail}</td>
-                  </tr>
+                   </tr>
                   <tr>
                     <th>Date:</th>
                     <td>{new Date(selectedOrder.createdAt).toLocaleString()}</td>
-                  </tr>
+                   </tr>
                   <tr>
                     <th>Status:</th>
                     <td>
-                      <Form.Select 
+                      <select 
+                        className={styles.statusSelect}
                         value={selectedOrder.status} 
                         onChange={(e) => handleUpdateStatus(selectedOrder.id, e.target.value)}
                         disabled={updatingStatus}
-                        style={{ width: 'auto', display: 'inline-block' }}
                       >
                         {statusOptions.map(status => (
                           <option key={status} value={status}>{status}</option>
                         ))}
-                      </Form.Select>
+                      </select>
                       {updatingStatus && <Spinner size="sm" className="ms-2" />}
                     </td>
-                  </tr>
+                   </tr>
                   <tr>
                     <th>Payment Method:</th>
                     <td>{selectedOrder.paymentMethod || 'N/A'}</td>
-                  </tr>
+                   </tr>
                   <tr>
                     <th>Payment Status:</th>
                     <td>
-                      <Badge bg={selectedOrder.paymentStatus === 'PAID' ? 'success' : 'warning'}>
+                      <span className={`${styles.paymentBadge} ${selectedOrder.paymentStatus === 'PAID' ? styles.paidBadge : styles.pendingBadge}`}>
                         {selectedOrder.paymentStatus || 'PENDING'}
-                      </Badge>
+                      </span>
                     </td>
-                  </tr>
+                   </tr>
                   <tr>
                     <th>Shipping Address:</th>
-                    <td>{selectedOrder.shippingAddress}</td>
-                  </tr>
+                    <td className={styles.shippingAddress}>{selectedOrder.shippingAddress}</td>
+                   </tr>
                   <tr>
                     <th>Total Amount:</th>
-                    <td><h5 className="text-primary">${selectedOrder.totalAmount?.toFixed(2)}</h5></td>
-                  </tr>
+                    <td><h5 className={styles.totalAmountLarge}>${selectedOrder.totalAmount?.toFixed(2)}</h5></td>
+                   </tr>
                 </tbody>
               </table>
 
-              <h5 className="mt-4">Order Items</h5>
-              <Table striped bordered size="sm">
+              <h5 className={styles.sectionTitle}>Order Items</h5>
+              <table className={styles.itemsTable}>
                 <thead>
                   <tr>
                     <th>Product</th>
                     <th>Quantity</th>
                     <th>Price</th>
                     <th>Subtotal</th>
-                  </tr>
+                   </tr>
                 </thead>
                 <tbody>
                   {selectedOrder.items?.map((item, idx) => (
@@ -221,16 +224,16 @@ const AdminOrders = () => {
                   ))}
                 </tbody>
                 <tfoot>
-                  <tr className="table-active">
+                  <tr>
                     <td colSpan="3" className="text-end"><strong>Total:</strong></td>
                     <td><strong>${selectedOrder.totalAmount?.toFixed(2)}</strong></td>
                   </tr>
                 </tfoot>
-              </Table>
+              </table>
             </div>
           )}
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer className={styles.modalFooter}>
           <Button variant="secondary" onClick={() => setShowModal(false)}>
             Close
           </Button>

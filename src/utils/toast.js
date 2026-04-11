@@ -1,6 +1,6 @@
 import toast from 'react-hot-toast';
 
-// Clean toast styles without icons
+// Toast styling constants
 const toastStyles = {
   success: {
     style: {
@@ -10,10 +10,9 @@ const toastStyles = {
       padding: '12px 20px',
       fontWeight: '500',
       fontSize: '14px',
-      letterSpacing: '0.3px',
-      boxShadow: '0 8px 20px -4px rgba(16, 185, 129, 0.25)',
-      border: '1px solid rgba(255, 255, 255, 0.2)',
+      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
     },
+    icon: '✅',
   },
   error: {
     style: {
@@ -23,10 +22,9 @@ const toastStyles = {
       padding: '12px 20px',
       fontWeight: '500',
       fontSize: '14px',
-      letterSpacing: '0.3px',
-      boxShadow: '0 8px 20px -4px rgba(239, 68, 68, 0.25)',
-      border: '1px solid rgba(255, 255, 255, 0.2)',
+      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
     },
+    icon: '❌',
   },
   info: {
     style: {
@@ -36,10 +34,9 @@ const toastStyles = {
       padding: '12px 20px',
       fontWeight: '500',
       fontSize: '14px',
-      letterSpacing: '0.3px',
-      boxShadow: '0 8px 20px -4px rgba(59, 130, 246, 0.25)',
-      border: '1px solid rgba(255, 255, 255, 0.2)',
+      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
     },
+    icon: 'ℹ️',
   },
   loading: {
     style: {
@@ -49,16 +46,13 @@ const toastStyles = {
       padding: '12px 20px',
       fontWeight: '500',
       fontSize: '14px',
-      letterSpacing: '0.3px',
-      boxShadow: '0 8px 20px -4px rgba(102, 126, 234, 0.25)',
-      border: '1px solid rgba(255, 255, 255, 0.2)',
+      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
     },
   },
 };
 
-// Function to show loading toast that transforms
-export const showLoadingToast = (loadingMessage, successMessageOrFn, errorMessageOrFn, asyncFunction) => {
-  // Show loading toast
+// Transformable loading toast
+export const showLoadingToast = (loadingMessage, successMessage, errorMessage, asyncFunction) => {
   const toastId = toast.loading(loadingMessage, {
     position: 'top-center',
     style: toastStyles.loading.style,
@@ -66,78 +60,67 @@ export const showLoadingToast = (loadingMessage, successMessageOrFn, errorMessag
     duration: Infinity,
   });
 
-  // Execute async function
   asyncFunction()
     .then((result) => {
-      // Get success message (either string or function that returns string)
-      const successMessage = typeof successMessageOrFn === 'function' 
-        ? successMessageOrFn(result) 
-        : successMessageOrFn;
-      
-      // Transform to success
-      toast.success(successMessage, {
+      const successMsg = typeof successMessage === 'function' ? successMessage(result) : successMessage;
+      toast.success(successMsg, {
         id: toastId,
         duration: 3000,
         position: 'top-center',
         style: toastStyles.success.style,
-        icon: null,
+        icon: toastStyles.success.icon,
       });
       return result;
     })
     .catch((error) => {
-      // Get error message (either string or function that returns string)
-      const errorMessage = typeof errorMessageOrFn === 'function' 
-        ? errorMessageOrFn(error) 
-        : errorMessageOrFn || 'Operation failed';
-      
-      // Transform to error
-      toast.error(errorMessage, {
+      const errorMsg = typeof errorMessage === 'function' ? errorMessage(error) : errorMessage || 'Operation failed';
+      toast.error(errorMsg, {
         id: toastId,
         duration: 4000,
         position: 'top-center',
         style: toastStyles.error.style,
-        icon: null,
+        icon: toastStyles.error.icon,
       });
       throw error;
     });
 };
 
-// Simple toasts (for non-loading scenarios)
+// Simple toast notifications
 export const showSuccess = (message, duration = 3000) => {
   toast.success(message, {
-    duration: duration,
+    duration,
     position: 'top-center',
     style: toastStyles.success.style,
-    icon: null,
+    icon: toastStyles.success.icon,
   });
 };
 
 export const showError = (message, duration = 4000) => {
   toast.error(message, {
-    duration: duration,
+    duration,
     position: 'top-center',
     style: toastStyles.error.style,
-    icon: null,
+    icon: toastStyles.error.icon,
   });
 };
 
 export const showInfo = (message, duration = 3000) => {
   toast(message, {
-    duration: duration,
+    duration,
     position: 'top-center',
     style: toastStyles.info.style,
-    icon: null,
+    icon: toastStyles.info.icon,
   });
 };
 
-// Cart specific toast
+// Cart specific
 export const showCartAdded = (productName) => {
   showSuccess(`${productName} added to cart`, 2000);
 };
 
-// Order specific toasts
+// Order specific
 export const showOrderPlaced = (orderNumber) => {
-  showSuccess(`Order ${orderNumber} placed successfully`, 4000);
+  showSuccess(`Order ${orderNumber} placed successfully`, 5000);
 };
 
 export const showOrderCancelled = (orderNumber) => {

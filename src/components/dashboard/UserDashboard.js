@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Tabs, Tab, Button, Form, Alert, Badge, Table, Modal } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Form, Alert, Badge, Table, Modal } from 'react-bootstrap';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { orderAPI, authAPI, cartAPI } from '../../services/api';
-import { showSuccess, showError, showLoading, showInfo } from '../../utils/toast';
+import { orderAPI } from '../../services/api';
+import { showSuccess, showError, showInfo } from '../../utils/toast';
 import { FaBox, FaMapMarkerAlt, FaCreditCard, FaUserCog, FaHeart, FaEye, FaTrash, FaPlus } from 'react-icons/fa';
-import { motion } from 'framer-motion';
-import toast from 'react-hot-toast';
+import styles from './UserDashboard.module.css';
 
 const UserDashboard = () => {
   const { user, isAuthenticated } = useAuth();
@@ -30,7 +29,6 @@ const UserDashboard = () => {
   const [wishlist, setWishlist] = useState([]);
   const [recentlyViewed, setRecentlyViewed] = useState([]);
   const [paymentMethods, setPaymentMethods] = useState([]);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -43,23 +41,18 @@ const UserDashboard = () => {
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      // Fetch orders
       const ordersResponse = await orderAPI.getUserOrders();
       setOrders(ordersResponse.data || []);
       
-      // Load addresses from localStorage (in production, fetch from API)
       const savedAddresses = JSON.parse(localStorage.getItem('userAddresses') || '[]');
       setAddresses(savedAddresses);
       
-      // Load wishlist from localStorage
       const savedWishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
       setWishlist(savedWishlist);
       
-      // Load recently viewed from localStorage
       const savedRecentlyViewed = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
       setRecentlyViewed(savedRecentlyViewed);
       
-      // Load payment methods from localStorage
       const savedPayments = JSON.parse(localStorage.getItem('paymentMethods') || '[]');
       setPaymentMethods(savedPayments);
     } catch (err) {
@@ -105,7 +98,6 @@ const UserDashboard = () => {
 
   const handleSaveAddress = () => {
     if (editingAddress) {
-      // Update existing address
       const updatedAddresses = addresses.map(addr => 
         addr.id === editingAddress.id ? { ...addressForm, id: editingAddress.id } : addr
       );
@@ -113,7 +105,6 @@ const UserDashboard = () => {
       localStorage.setItem('userAddresses', JSON.stringify(updatedAddresses));
       showSuccess('Address updated successfully');
     } else {
-      // Add new address
       const newAddress = { ...addressForm, id: Date.now() };
       if (addressForm.isDefault) {
         const updatedAddresses = addresses.map(addr => ({ ...addr, isDefault: false }));
@@ -150,7 +141,7 @@ const UserDashboard = () => {
 
   if (loading) {
     return (
-      <Container className="mt-5 text-center">
+      <Container className="text-center mt-5">
         <div className="spinner-custom mx-auto"></div>
         <p className="mt-3 text-white">Loading dashboard...</p>
       </Container>
@@ -158,68 +149,68 @@ const UserDashboard = () => {
   }
 
   return (
-    <Container className="mt-4 mb-5">
+    <Container className={styles.container}>
       <Row>
         {/* Sidebar */}
         <Col md={3}>
-          <Card className="dashboard-sidebar">
+          <Card className={styles.sidebar}>
             <Card.Body className="text-center">
-              <div className="dashboard-avatar">
+              <div className={styles.avatar}>
                 {user?.firstName?.charAt(0)}{user?.lastName?.charAt(0)}
               </div>
-              <h5 className="mt-3">{user?.firstName} {user?.lastName}</h5>
-              <p className="text-muted small">{user?.email}</p>
-              <div className="dashboard-stats">
-                <div className="stat-item">
-                  <div className="stat-value">{orders.length}</div>
-                  <div className="stat-label">Orders</div>
+              <h5 className={styles.userName}>{user?.firstName} {user?.lastName}</h5>
+              <p className={styles.userEmail}>{user?.email}</p>
+              <div className={styles.stats}>
+                <div className={styles.statItem}>
+                  <div className={styles.statValue}>{orders.length}</div>
+                  <div className={styles.statLabel}>Orders</div>
                 </div>
-                <div className="stat-item">
-                  <div className="stat-value">{wishlist.length}</div>
-                  <div className="stat-label">Wishlist</div>
+                <div className={styles.statItem}>
+                  <div className={styles.statValue}>{wishlist.length}</div>
+                  <div className={styles.statLabel}>Wishlist</div>
                 </div>
-                <div className="stat-item">
-                  <div className="stat-value">{addresses.length}</div>
-                  <div className="stat-label">Addresses</div>
+                <div className={styles.statItem}>
+                  <div className={styles.statValue}>{addresses.length}</div>
+                  <div className={styles.statLabel}>Addresses</div>
                 </div>
               </div>
             </Card.Body>
           </Card>
           
-          <Card className="dashboard-menu mt-3">
+          <Card className={styles.menu}>
             <Card.Body className="p-0">
               <button 
-                className={`dashboard-menu-item ${activeTab === 'orders' ? 'active' : ''}`}
+                className={`${styles.menuItem} ${activeTab === 'orders' ? styles.menuItemActive : ''}`}
                 onClick={() => setActiveTab('orders')}
               >
                 <FaBox /> My Orders
               </button>
               <button 
-                className={`dashboard-menu-item ${activeTab === 'addresses' ? 'active' : ''}`}
+                className={`${styles.menuItem} ${activeTab === 'addresses' ? styles.menuItemActive : ''}`}
                 onClick={() => setActiveTab('addresses')}
               >
                 <FaMapMarkerAlt /> Saved Addresses
               </button>
               <button 
-                className={`dashboard-menu-item ${activeTab === 'payments' ? 'active' : ''}`}
+                className={`${styles.menuItem} ${activeTab === 'payments' ? styles.menuItemActive : ''}`}
                 onClick={() => setActiveTab('payments')}
               >
                 <FaCreditCard /> Payment Methods
               </button>
               <button 
-                className={`dashboard-menu-item ${activeTab === 'wishlist' ? 'active' : ''}`}
+                className={`${styles.menuItem} ${activeTab === 'wishlist' ? styles.menuItemActive : ''}`}
                 onClick={() => setActiveTab('wishlist')}
               >
                 <FaHeart /> Wishlist
               </button>
               <button 
-                className={`dashboard-menu-item ${activeTab === 'recent' ? 'active' : ''}`}
+                className={`${styles.menuItem} ${activeTab === 'recent' ? styles.menuItemActive : ''}`}
                 onClick={() => setActiveTab('recent')}
               >
                 <FaEye /> Recently Viewed
               </button>
               <button 
-                className={`dashboard-menu-item ${activeTab === 'settings' ? 'active' : ''}`}
+                className={`${styles.menuItem} ${activeTab === 'settings' ? styles.menuItemActive : ''}`}
                 onClick={() => setActiveTab('settings')}
               >
                 <FaUserCog /> Account Settings
@@ -230,17 +221,17 @@ const UserDashboard = () => {
 
         {/* Main Content */}
         <Col md={9}>
-          <Card className="dashboard-content">
-            <Card.Body>
+          <Card className={styles.content}>
+            <Card.Body className={styles.contentBody}>
               {/* Orders Tab */}
               {activeTab === 'orders' && (
                 <div>
-                  <h4 className="mb-4">My Orders</h4>
+                  <h4 className={styles.sectionTitle}>My Orders</h4>
                   {orders.length === 0 ? (
                     <Alert variant="info">No orders yet. Start shopping!</Alert>
                   ) : (
                     <div className="table-responsive">
-                      <Table hover>
+                      <Table hover className={styles.tableHover}>
                         <thead>
                           <tr>
                             <th>Order #</th>
@@ -252,7 +243,7 @@ const UserDashboard = () => {
                         </thead>
                         <tbody>
                           {orders.map((order) => (
-                            <tr key={order.id} style={{ cursor: 'pointer' }} onClick={() => navigate(`/orders/${order.orderNumber}`)}>
+                            <tr key={order.id} onClick={() => navigate(`/orders/${order.orderNumber}`)}>
                               <td><code>{order.orderNumber}</code></td>
                               <td>{new Date(order.createdAt).toLocaleDateString()}</td>
                               <td>{order.items?.length || 0} items</td>
@@ -271,7 +262,7 @@ const UserDashboard = () => {
               {activeTab === 'addresses' && (
                 <div>
                   <div className="d-flex justify-content-between align-items-center mb-4">
-                    <h4>Saved Addresses</h4>
+                    <h4 className={styles.sectionTitle}>Saved Addresses</h4>
                     <Button variant="primary" size="sm" onClick={handleAddAddress}>
                       <FaPlus /> Add New Address
                     </Button>
@@ -282,7 +273,7 @@ const UserDashboard = () => {
                     <Row>
                       {addresses.map((address) => (
                         <Col md={6} key={address.id} className="mb-3">
-                          <Card className="address-card">
+                          <Card className={styles.addressCard}>
                             <Card.Body>
                               {address.isDefault && <Badge bg="primary" className="mb-2">Default</Badge>}
                               <div><strong>{address.fullName}</strong></div>
@@ -307,7 +298,7 @@ const UserDashboard = () => {
               {activeTab === 'payments' && (
                 <div>
                   <div className="d-flex justify-content-between align-items-center mb-4">
-                    <h4>Payment Methods</h4>
+                    <h4 className={styles.sectionTitle}>Payment Methods</h4>
                     <Button variant="primary" size="sm" onClick={handleAddPaymentMethod}>
                       <FaPlus /> Add Payment Method
                     </Button>
@@ -340,14 +331,14 @@ const UserDashboard = () => {
               {/* Wishlist Tab */}
               {activeTab === 'wishlist' && (
                 <div>
-                  <h4 className="mb-4">Wishlist</h4>
+                  <h4 className={styles.sectionTitle}>Wishlist</h4>
                   {wishlist.length === 0 ? (
                     <Alert variant="info">Your wishlist is empty. Start adding products!</Alert>
                   ) : (
                     <Row>
                       {wishlist.map((product) => (
                         <Col md={4} key={product.id} className="mb-3">
-                          <Card className="wishlist-card">
+                          <Card className={styles.wishlistCard}>
                             <Card.Img variant="top" src={product.imageUrl || 'https://placehold.co/300x200'} />
                             <Card.Body>
                               <Card.Title className="fs-6">{product.name}</Card.Title>
@@ -368,14 +359,14 @@ const UserDashboard = () => {
               {/* Recently Viewed Tab */}
               {activeTab === 'recent' && (
                 <div>
-                  <h4 className="mb-4">Recently Viewed</h4>
+                  <h4 className={styles.sectionTitle}>Recently Viewed</h4>
                   {recentlyViewed.length === 0 ? (
                     <Alert variant="info">No recently viewed products. Browse some products!</Alert>
                   ) : (
                     <Row>
                       {recentlyViewed.map((product) => (
                         <Col md={4} key={product.id} className="mb-3">
-                          <Card className="recent-card">
+                          <Card className={styles.recentCard}>
                             <Card.Img variant="top" src={product.imageUrl || 'https://placehold.co/300x200'} />
                             <Card.Body>
                               <Card.Title className="fs-6">{product.name}</Card.Title>
@@ -393,7 +384,7 @@ const UserDashboard = () => {
               {/* Settings Tab */}
               {activeTab === 'settings' && (
                 <div>
-                  <h4 className="mb-4">Account Settings</h4>
+                  <h4 className={styles.sectionTitle}>Account Settings</h4>
                   <Form>
                     <Row>
                       <Col md={6}>

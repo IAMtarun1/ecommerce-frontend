@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Spinner } from 'react-bootstrap';
+import { Container, Row, Col, Spinner } from 'react-bootstrap';
 import { productAPI, orderAPI } from '../../services/api';
+import styles from './AdminDashboard.module.css';
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
@@ -43,47 +44,47 @@ const AdminDashboard = () => {
 
   if (loading) {
     return (
-      <Container className="text-center mt-5">
-        <Spinner animation="border" />
+      <Container className={styles.loadingContainer}>
+        <Spinner animation="border" variant="primary" />
       </Container>
     );
   }
 
   return (
-    <Container>
-      <h2 className="mb-4">Dashboard</h2>
+    <Container className={styles.container}>
+      <h2 className={styles.title}>Dashboard</h2>
       <Row>
         <Col md={3} className="mb-3">
-          <Card className="text-center bg-primary text-white">
-            <Card.Body>
-              <h3>{stats.totalProducts}</h3>
-              <p>Total Products</p>
-            </Card.Body>
-          </Card>
+          <div className={`${styles.statCard} ${styles.cardPrimary}`}>
+            <div className={styles.cardBody}>
+              <div className={styles.statValue}>{stats.totalProducts}</div>
+              <p className={styles.statLabel}>Total Products</p>
+            </div>
+          </div>
         </Col>
         <Col md={3} className="mb-3">
-          <Card className="text-center bg-success text-white">
-            <Card.Body>
-              <h3>{stats.totalOrders}</h3>
-              <p>Total Orders</p>
-            </Card.Body>
-          </Card>
+          <div className={`${styles.statCard} ${styles.cardSuccess}`}>
+            <div className={styles.cardBody}>
+              <div className={styles.statValue}>{stats.totalOrders}</div>
+              <p className={styles.statLabel}>Total Orders</p>
+            </div>
+          </div>
         </Col>
         <Col md={3} className="mb-3">
-          <Card className="text-center bg-info text-white">
-            <Card.Body>
-              <h3>${stats.totalRevenue.toFixed(2)}</h3>
-              <p>Total Revenue</p>
-            </Card.Body>
-          </Card>
+          <div className={`${styles.statCard} ${styles.cardInfo}`}>
+            <div className={styles.cardBody}>
+              <div className={styles.statValue}>${stats.totalRevenue.toFixed(2)}</div>
+              <p className={styles.statLabel}>Total Revenue</p>
+            </div>
+          </div>
         </Col>
         <Col md={3} className="mb-3">
-          <Card className="text-center bg-warning text-white">
-            <Card.Body>
-              <h3>{stats.lowStock}</h3>
-              <p>Low Stock Items</p>
-            </Card.Body>
-          </Card>
+          <div className={`${styles.statCard} ${styles.cardWarning}`}>
+            <div className={styles.cardBody}>
+              <div className={styles.statValue}>{stats.lowStock}</div>
+              <p className={styles.statLabel}>Low Stock Items</p>
+            </div>
+          </div>
         </Col>
       </Row>
     </Container>

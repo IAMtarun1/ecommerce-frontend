@@ -1,0 +1,171 @@
+.container {
+  margin-top: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+/* Sidebar Styles */
+.sidebar {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: bold;
+  margin: 0 auto;
+  border: 3px solid white;
+}
+
+.userName {
+  margin-top: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.userEmail {
+  font-size: 0.75rem;
+  opacity: 0.8;
+  margin-top: 0.25rem;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.statItem {
+  text-align: center;
+}
+
+.statValue {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+/* Menu Styles */
+.menu {
+  border-radius: 16px;
+  overflow: hidden;
+  border: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin-top: 1rem;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  width: 100%;
+  background: white;
+  border: none;
+  text-align: left;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  color: #4b5563;
+  border-left: 3px solid transparent;
+}
+
+.menuItem:hover {
+  background: #f9fafb;
+  color: #3b82f6;
+}
+
+.menuItemActive {
+  background: #eff6ff;
+  color: #3b82f6;
+  border-left-color: #3b82f6;
+}
+
+/* Content Styles */
+.content {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  min-height: 500px;
+}
+
+.contentBody {
+  padding: 1.5rem;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #1a1a2e;
+}
+
+/* Address Card */
+.addressCard {
+  transition: all 0.3s ease;
+  height: 100%;
+}
+
+.addressCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Wishlist & Recent Cards */
+.wishlistCard,
+.recentCard {
+  transition: all 0.3s ease;
+  height: 100%;
+}
+
+.wishlistCard:hover,
+.recentCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.wishlistCard img,
+.recentCard img {
+  height: 150px;
+  object-fit: cover;
+}
+
+/* Table Styles */
+.tableHover tbody tr {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tableHover tbody tr:hover {
+  background: rgba(102, 126, 234, 0.05);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .stats {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .menuItem {
+    padding: 10px 16px;
+  }
+  
+  .sectionTitle {
+    font-size: 1.25rem;
+  }
+}

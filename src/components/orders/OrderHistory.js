@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { showLoadingToast } from '../../utils/toast';
 import ConfirmationModal from '../common/ConfirmationModal';
+import styles from './OrderHistory.module.css';
 
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
@@ -47,7 +48,6 @@ const OrderHistory = () => {
     setShowCancelModal(false);
     setCancelling(selectedOrder.id);
     
-    // Single toast that transforms from loading to success
     await showLoadingToast(
       `Cancelling order ${selectedOrder.orderNumber}...`,
       `Order ${selectedOrder.orderNumber} cancelled`,
@@ -55,7 +55,7 @@ const OrderHistory = () => {
       () => orderAPI.cancelOrder(selectedOrder.id)
     );
     
-    fetchOrders(); // Refresh orders
+    fetchOrders();
     setCancelling(null);
     setSelectedOrder(null);
   };
@@ -74,30 +74,34 @@ const OrderHistory = () => {
     return <Badge bg={config.bg} className="badge-status px-3 py-2">{config.text}</Badge>;
   };
 
-  if (loading) return (
-    <Container className="text-center mt-5">
-      <div className="spinner-custom mx-auto"></div>
-      <p className="mt-3 text-white">Loading orders...</p>
-    </Container>
-  );
+  if (loading) {
+    return (
+      <Container className={styles.loadingContainer}>
+        <div className="spinner-custom mx-auto"></div>
+        <p className={styles.loadingText}>Loading orders...</p>
+      </Container>
+    );
+  }
 
-  if (error) return (
-    <Container className="mt-5">
-      <div className="glass-card p-4 text-center">
-        <p className="text-danger">{error}</p>
-      </div>
-    </Container>
-  );
+  if (error) {
+    return (
+      <Container className="mt-5">
+        <div className={styles.errorContainer}>
+          <p className={styles.errorText}>{error}</p>
+        </div>
+      </Container>
+    );
+  }
 
   if (orders.length === 0) {
     return (
       <Container className="mt-5 text-center">
-        <div className="glass-card p-5">
-          <h3>No orders yet</h3>
-          <p className="text-muted mt-2">Start shopping to place your first order!</p>
-          <Button onClick={() => navigate('/products')} className="btn-gradient mt-3 px-4 py-2">
+        <div className={styles.emptyContainer}>
+          <h3 className={styles.emptyTitle}>No orders yet</h3>
+          <p className={styles.emptyMessage}>Start shopping to place your first order!</p>
+          <button onClick={() => navigate('/products')} className={styles.browseBtn}>
             Browse Products
-          </Button>
+          </button>
         </div>
       </Container>
     );
@@ -105,11 +109,11 @@ const OrderHistory = () => {
 
   return (
     <>
-      <Container className="mt-4">
-        <h1 className="mb-4 text-white fw-bold">My Orders</h1>
-        <div className="glass-card p-4">
+      <Container className={styles.container}>
+        <h1 className={styles.title}>My Orders</h1>
+        <div className={styles.cardContainer}>
           <div className="table-responsive">
-            <Table hover responsive className="align-middle mb-0">
+            <Table hover responsive className={styles.table}>
               <thead>
                 <tr>
                   <th>Order #</th>
@@ -123,11 +127,11 @@ const OrderHistory = () => {
               </thead>
               <tbody>
                 {orders.map((order) => (
-                  <tr key={order.id} className="cart-item">
-                    <td><code className="fw-bold">{order.orderNumber}</code></td>
+                  <tr key={order.id} className={styles.tableRow}>
+                    <td><code className={styles.orderNumber}>{order.orderNumber}</code></td>
                     <td>{new Date(order.createdAt).toLocaleDateString()}</td>
                     <td>{order.items?.length || 0} items</td>
-                    <td><strong className="text-primary">${order.totalAmount}</strong></td>
+                    <td><strong className={styles.totalAmount}>${order.totalAmount}</strong></td>
                     <td>{getStatusBadge(order.status)}</td>
                     <td>
                       <Badge bg={order.paymentStatus === 'PAID' ? 'success' : 'warning'} className="px-3 py-2">
@@ -136,15 +140,13 @@ const OrderHistory = () => {
                     </td>
                     <td>
                       {order.status === 'PENDING' && (
-                        <Button 
-                          variant="outline-danger" 
-                          size="sm"
+                        <button 
+                          className={styles.cancelBtn}
                           onClick={() => handleCancelClick(order)}
                           disabled={cancelling === order.id}
-                          className="rounded-pill px-3"
                         >
                           {cancelling === order.id ? '...' : 'Cancel'}
-                        </Button>
+                        </button>
                       )}
                     </td>
                   </tr>

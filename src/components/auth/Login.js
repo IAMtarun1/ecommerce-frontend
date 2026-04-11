@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Form, Button, Card, Alert } from 'react-bootstrap';
+import { Form } from 'react-bootstrap';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { showLoadingToast } from '../../utils/toast';
 import { motion } from 'framer-motion';
 import { FaGoogle, FaApple, FaShoppingBag } from 'react-icons/fa';
+import styles from './Login.module.css';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -47,30 +48,30 @@ const Login = () => {
   };
 
   return (
-    <div className="auth-container-modern">
-      <div className="auth-grid">
+    <div className={styles.container}>
+      <div className={styles.grid}>
         {/* Left Side - Brand Section */}
-        <div className="auth-brand-side">
+        <div className={styles.brandSide}>
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
-            className="brand-content-modern"
+            className={styles.brandContent}
           >
-            <div className="brand-logo-modern">
+            <div className={styles.brandLogo}>
               <FaShoppingBag size={42} />
               <h1>ShopHub</h1>
             </div>
             <h2>Welcome back!</h2>
             <p>Login to access your account and continue shopping</p>
-            <div className="brand-features-modern">
-              <div className="feature">
+            <div className={styles.brandFeatures}>
+              <div className={styles.feature}>
                 <span>✓</span> Fast & Secure Checkout
               </div>
-              <div className="feature">
+              <div className={styles.feature}>
                 <span>✓</span> Order Tracking
               </div>
-              <div className="feature">
+              <div className={styles.feature}>
                 <span>✓</span> 24/7 Customer Support
               </div>
             </div>
@@ -78,31 +79,31 @@ const Login = () => {
         </div>
 
         {/* Right Side - Form Section */}
-        <div className="auth-form-side">
+        <div className={styles.formSide}>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="form-container-modern"
+            className={styles.formContainer}
           >
-            <div className="form-header-modern">
+            <div className={styles.formHeader}>
               <h2>Sign In</h2>
               <p>
                 Don't have an account?{' '}
-                <Link to="/register" className="auth-link-modern">
+                <Link to="/register" className={styles.authLink}>
                   Create account
                 </Link>
               </p>
             </div>
 
             {error && (
-              <div className="alert-modern alert-error-modern">
+              <div className={`${styles.alert} ${styles.alertError}`}>
                 {error}
               </div>
             )}
 
             <Form onSubmit={handleSubmit}>
-              <div className="input-group-modern">
+              <div className={styles.inputGroup}>
                 <label>Email address</label>
                 <input
                   type="email"
@@ -110,11 +111,11 @@ const Login = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="input-modern"
+                  className={styles.input}
                 />
               </div>
 
-              <div className="input-group-modern">
+              <div className={styles.inputGroup}>
                 <label>Password</label>
                 <input
                   type="password"
@@ -122,33 +123,33 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="input-modern"
+                  className={styles.input}
                 />
               </div>
 
               <button 
                 type="submit" 
                 disabled={loading}
-                className="submit-btn-modern"
+                className={styles.submitBtn}
               >
                 {loading ? 'Signing in...' : 'Sign In'}
               </button>
             </Form>
 
-            <div className="divider-modern">
+            <div className={styles.divider}>
               <span>Or sign in with</span>
             </div>
 
-            <div className="social-buttons-modern">
-              <button className="social-btn-modern">
+            <div className={styles.socialButtons}>
+              <button className={styles.socialBtn}>
                 <FaGoogle /> Google
               </button>
-              <button className="social-btn-modern">
+              <button className={styles.socialBtn}>
                 <FaApple /> Apple
               </button>
             </div>
 
-            <div className="form-footer-modern">
+            <div className={styles.formFooter}>
               <Link to="/forgot-password">Forgot password?</Link>
             </div>
           </motion.div>

@@ -1,36 +1,63 @@
 import React from 'react';
-import { Container, Row, Col, Nav } from 'react-bootstrap';
-import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { Container, Row, Col } from 'react-bootstrap';
+import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import styles from './AdminLayout.module.css';
 
 const AdminLayout = () => {
   const { user, isAdmin } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   if (!isAdmin) {
     navigate('/');
     return null;
   }
 
+  const isActive = (path) => location.pathname === path;
+
   return (
-    <Container fluid className="mt-3">
+    <Container fluid className={styles.container}>
       <Row>
-        <Col md={2} className="bg-light vh-100 p-3">
-          <h5>Admin Dashboard</h5>
-          <Nav className="flex-column">
-            <Nav.Link as={Link} to="/admin">Dashboard</Nav.Link>
-            <Nav.Link as={Link} to="/admin/products">Products</Nav.Link>
-            <Nav.Link as={Link} to="/admin/orders">Orders</Nav.Link>
-            <Nav.Link as={Link} to="/admin/users">Users</Nav.Link>
-          </Nav>
-          <hr />
-          <div className="mt-auto">
-            <small>Logged in as: {user?.email}</small>
+        {/* Sidebar */}
+        <Col md={2} className={styles.sidebar}>
+          <h5 className={styles.sidebarTitle}>Admin Dashboard</h5>
+          <div className={styles.nav}>
+            <Link 
+              to="/admin" 
+              className={`${styles.navLink} ${isActive('/admin') ? styles.active : ''}`}
+            >
+              Dashboard
+            </Link>
+            <Link 
+              to="/admin/products" 
+              className={`${styles.navLink} ${isActive('/admin/products') ? styles.active : ''}`}
+            >
+              Products
+            </Link>
+            <Link 
+              to="/admin/orders" 
+              className={`${styles.navLink} ${isActive('/admin/orders') ? styles.active : ''}`}
+            >
+              Orders
+            </Link>
+            <Link 
+              to="/admin/users" 
+              className={`${styles.navLink} ${isActive('/admin/users') ? styles.active : ''}`}
+            >
+              Users
+            </Link>
+          </div>
+          <div className={styles.divider} />
+          <div className={styles.userInfo}>
+            <small className={styles.userEmail}>Logged in as: {user?.email}</small>
             <br />
-            <small className="text-muted">Role: {user?.role}</small>
+            <small className={styles.userRole}>Role: {user?.role}</small>
           </div>
         </Col>
-        <Col md={10}>
+
+        {/* Content Area */}
+        <Col md={10} className={styles.content}>
           <Outlet />
         </Col>
       </Row>

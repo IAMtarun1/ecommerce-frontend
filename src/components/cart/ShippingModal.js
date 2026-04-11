@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Modal, Form, Button, Row, Col } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
 import { motion } from 'framer-motion';
+import styles from './ShippingModal.module.css';
 
 const ShippingModal = ({ show, onHide, onConfirm }) => {
   const [formData, setFormData] = useState({
@@ -17,7 +18,6 @@ const ShippingModal = ({ show, onHide, onConfirm }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors({ ...errors, [name]: '' });
     }
@@ -56,172 +56,149 @@ const ShippingModal = ({ show, onHide, onConfirm }) => {
       centered 
       size="lg"
       backdrop="static"
-      className="shipping-modal"
+      contentClassName={styles.modalContent}
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: "spring", duration: 0.5 }}
       >
-        <Modal.Header closeButton className="border-0 pb-0">
-          <Modal.Title className="fw-bold">
+        <div className={styles.modalHeader}>
+          <h4 className={styles.modalTitle}>
             📦 Shipping Information
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="p-4">
-          <Form>
-            <Row>
-              <Col md={12}>
-                <Form.Group className="mb-3">
-                  <Form.Label className="fw-semibold">Full Name</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="fullName"
-                    value={formData.fullName}
-                    onChange={handleChange}
-                    placeholder="John Doe"
-                    isInvalid={!!errors.fullName}
-                    className="rounded-3"
-                  />
-                  <Form.Control.Feedback type="invalid">
-                    {errors.fullName}
-                  </Form.Control.Feedback>
-                </Form.Group>
-              </Col>
-            </Row>
+          </h4>
+          <button className={styles.closeBtn} onClick={onHide}>✕</button>
+        </div>
+        
+        <div className={styles.modalBody}>
+          {/* Full Name */}
+          <div className={styles.formGroup}>
+            <label className={styles.formLabel}>Full Name</label>
+            <input
+              type="text"
+              name="fullName"
+              value={formData.fullName}
+              onChange={handleChange}
+              placeholder="John Doe"
+              className={`${styles.formInput} ${errors.fullName ? styles.formInputError : ''}`}
+            />
+            {errors.fullName && <div className={styles.errorFeedback}>{errors.fullName}</div>}
+          </div>
 
-            <Form.Group className="mb-3">
-              <Form.Label className="fw-semibold">Street Address</Form.Label>
-              <Form.Control
-                type="text"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                placeholder="123 Main St"
-                isInvalid={!!errors.address}
-                className="rounded-3"
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.address}
-              </Form.Control.Feedback>
-            </Form.Group>
+          {/* Street Address */}
+          <div className={styles.formGroup}>
+            <label className={styles.formLabel}>Street Address</label>
+            <input
+              type="text"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              placeholder="123 Main St"
+              className={`${styles.formInput} ${errors.address ? styles.formInputError : ''}`}
+            />
+            {errors.address && <div className={styles.errorFeedback}>{errors.address}</div>}
+          </div>
 
-            <Row>
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label className="fw-semibold">City</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="city"
-                    value={formData.city}
-                    onChange={handleChange}
-                    placeholder="New York"
-                    isInvalid={!!errors.city}
-                    className="rounded-3"
-                  />
-                  <Form.Control.Feedback type="invalid">
-                    {errors.city}
-                  </Form.Control.Feedback>
-                </Form.Group>
-              </Col>
-              <Col md={3}>
-                <Form.Group className="mb-3">
-                  <Form.Label className="fw-semibold">State</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="state"
-                    value={formData.state}
-                    onChange={handleChange}
-                    placeholder="NY"
-                    isInvalid={!!errors.state}
-                    className="rounded-3"
-                  />
-                  <Form.Control.Feedback type="invalid">
-                    {errors.state}
-                  </Form.Control.Feedback>
-                </Form.Group>
-              </Col>
-              <Col md={3}>
-                <Form.Group className="mb-3">
-                  <Form.Label className="fw-semibold">ZIP Code</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="zipCode"
-                    value={formData.zipCode}
-                    onChange={handleChange}
-                    placeholder="10001"
-                    isInvalid={!!errors.zipCode}
-                    className="rounded-3"
-                  />
-                  <Form.Control.Feedback type="invalid">
-                    {errors.zipCode}
-                  </Form.Control.Feedback>
-                </Form.Group>
-              </Col>
-            </Row>
-
-            <Row>
-              <Col md={8}>
-                <Form.Group className="mb-3">
-                  <Form.Label className="fw-semibold">Country</Form.Label>
-                  <Form.Select
-                    name="country"
-                    value={formData.country}
-                    onChange={handleChange}
-                    isInvalid={!!errors.country}
-                    className="rounded-3"
-                  >
-                    <option>United States</option>
-                    <option>Canada</option>
-                    <option>United Kingdom</option>
-                    <option>Australia</option>
-                    <option>Germany</option>
-                    <option>France</option>
-                    <option>Other</option>
-                  </Form.Select>
-                  <Form.Control.Feedback type="invalid">
-                    {errors.country}
-                  </Form.Control.Feedback>
-                </Form.Group>
-              </Col>
-              <Col md={4}>
-                <Form.Group className="mb-3">
-                  <Form.Label className="fw-semibold">Phone (Optional)</Form.Label>
-                  <Form.Control
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    placeholder="+1 234 567 8900"
-                    isInvalid={!!errors.phone}
-                    className="rounded-3"
-                  />
-                  <Form.Control.Feedback type="invalid">
-                    {errors.phone}
-                  </Form.Control.Feedback>
-                </Form.Group>
-              </Col>
-            </Row>
-
-            <div className="bg-light p-3 rounded-3 mt-3">
-              <small className="text-muted">
-                <i className="bi bi-info-circle"></i> We'll use this information for shipping and order confirmation.
-              </small>
+          {/* City, State, ZIP Row */}
+          <div className={styles.row}>
+            <div className={styles.colMd6}>
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>City</label>
+                <input
+                  type="text"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleChange}
+                  placeholder="New York"
+                  className={`${styles.formInput} ${errors.city ? styles.formInputError : ''}`}
+                />
+                {errors.city && <div className={styles.errorFeedback}>{errors.city}</div>}
+              </div>
             </div>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer className="border-0 pt-0">
-          <Button variant="secondary" onClick={onHide} className="rounded-pill px-4">
+            <div className={styles.colMd3}>
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>State</label>
+                <input
+                  type="text"
+                  name="state"
+                  value={formData.state}
+                  onChange={handleChange}
+                  placeholder="NY"
+                  className={`${styles.formInput} ${errors.state ? styles.formInputError : ''}`}
+                />
+                {errors.state && <div className={styles.errorFeedback}>{errors.state}</div>}
+              </div>
+            </div>
+            <div className={styles.colMd3}>
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>ZIP Code</label>
+                <input
+                  type="text"
+                  name="zipCode"
+                  value={formData.zipCode}
+                  onChange={handleChange}
+                  placeholder="10001"
+                  className={`${styles.formInput} ${errors.zipCode ? styles.formInputError : ''}`}
+                />
+                {errors.zipCode && <div className={styles.errorFeedback}>{errors.zipCode}</div>}
+              </div>
+            </div>
+          </div>
+
+          {/* Country and Phone Row */}
+          <div className={styles.row}>
+            <div className={styles.colMd8}>
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Country</label>
+                <select
+                  name="country"
+                  value={formData.country}
+                  onChange={handleChange}
+                  className={styles.formSelect}
+                >
+                  <option>United States</option>
+                  <option>Canada</option>
+                  <option>United Kingdom</option>
+                  <option>Australia</option>
+                  <option>Germany</option>
+                  <option>France</option>
+                  <option>Other</option>
+                </select>
+                {errors.country && <div className={styles.errorFeedback}>{errors.country}</div>}
+              </div>
+            </div>
+            <div className={styles.colMd4}>
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Phone (Optional)</label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  placeholder="+1 234 567 8900"
+                  className={`${styles.formInput} ${errors.phone ? styles.formInputError : ''}`}
+                />
+                {errors.phone && <div className={styles.errorFeedback}>{errors.phone}</div>}
+              </div>
+            </div>
+          </div>
+
+          {/* Info Box */}
+          <div className={styles.infoBox}>
+            <small className={styles.infoText}>
+              ℹ️ We'll use this information for shipping and order confirmation.
+            </small>
+          </div>
+        </div>
+
+        <div className={styles.modalFooter}>
+          <button className={styles.cancelBtn} onClick={onHide}>
             Cancel
-          </Button>
-          <Button 
-            variant="primary" 
-            onClick={handleSubmit}
-            className="btn-gradient rounded-pill px-4"
-          >
+          </button>
+          <button className={styles.confirmBtn} onClick={handleSubmit}>
             Confirm & Continue
-          </Button>
-        </Modal.Footer>
+          </button>
+        </div>
       </motion.div>
     </Modal>
   );

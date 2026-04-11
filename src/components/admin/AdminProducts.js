@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Alert, Spinner } from 'react-bootstrap';
+import { Modal, Form, Alert, Spinner } from 'react-bootstrap';
 import { productAPI } from '../../services/api';
+import styles from './AdminProducts.module.css';
 
 const AdminProducts = () => {
   const [products, setProducts] = useState([]);
@@ -101,124 +102,165 @@ const AdminProducts = () => {
     }
   };
 
-  if (loading) return <Spinner animation="border" />;
+  const getStatusClass = (status) => {
+    switch (status) {
+      case 'ACTIVE': return styles.statusActive;
+      case 'INACTIVE': return styles.statusInactive;
+      case 'OUT_OF_STOCK': return styles.statusOutOfStock;
+      case 'DISCONTINUED': return styles.statusDiscontinued;
+      default: return styles.statusInactive;
+    }
+  };
+
+  const getStockClass = (stock) => {
+    if (stock === 0) return styles.outOfStock;
+    if (stock < 10) return styles.lowStock;
+    return '';
+  };
+
+  if (loading) {
+    return (
+      <div className={styles.loadingContainer}>
+        <Spinner animation="border" variant="primary" />
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <div className="d-flex justify-content-between mb-3">
-        <h2>Manage Products</h2>
-        <Button variant="primary" onClick={() => handleOpenModal()}>
-          Add New Product
-        </Button>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h2 className={styles.title}>Manage Products</h2>
+        <button className={styles.addBtn} onClick={() => handleOpenModal()}>
+          + Add New Product
+        </button>
       </div>
       
-      {error && <Alert variant="danger">{error}</Alert>}
+      {error && <div className={styles.errorContainer}>{error}</div>}
       
-      <Table striped bordered hover responsive>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>SKU</th>
-            <th>Price</th>
-            <th>Stock</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {products.map(product => (
-            <tr key={product.id}>
-              <td>{product.id}</td>
-              <td>{product.name}</td>
-              <td>{product.sku}</td>
-              <td>${product.price}</td>
-              <td>{product.stockQuantity}</td>
-              <td>{product.status}</td>
-              <td>
-                <Button variant="warning" size="sm" onClick={() => handleOpenModal(product)} className="me-2">
-                  Edit
-                </Button>
-                <Button variant="danger" size="sm" onClick={() => handleDelete(product.id)}>
-                  Delete
-                </Button>
-              </td>
+      <div className="table-responsive">
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>SKU</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Status</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {products.map(product => (
+              <tr key={product.id} className={styles.tableRow}>
+                <td className={styles.productId}>{product.id}</td>
+                <td className={styles.productName}>{product.name}</td>
+                <td className={styles.productSku}>{product.sku}</td>
+                <td className={styles.productPrice}>${product.price}</td>
+                <td className={`${styles.productStock} ${getStockClass(product.stockQuantity)}`}>
+                  {product.stockQuantity}
+                </td>
+                <td>
+                  <span className={`${styles.productStatus} ${getStatusClass(product.status)}`}>
+                    {product.status}
+                  </span>
+                </td>
+                <td>
+                  <div className={styles.actionBtns}>
+                    <button className={styles.editBtn} onClick={() => handleOpenModal(product)}>
+                      Edit
+                    </button>
+                    <button className={styles.deleteBtn} onClick={() => handleDelete(product.id)}>
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-      <Modal show={showModal} onHide={handleCloseModal} size="lg">
-        <Modal.Header closeButton>
-          <Modal.Title>{editingProduct ? 'Edit Product' : 'Add New Product'}</Modal.Title>
+      {/* Product Modal */}
+      <Modal show={showModal} onHide={handleCloseModal} size="lg" contentClassName={styles.modalContent}>
+        <Modal.Header closeButton className={styles.modalHeader}>
+          <Modal.Title className={styles.modalTitle}>
+            {editingProduct ? 'Edit Product' : 'Add New Product'}
+          </Modal.Title>
         </Modal.Header>
-        <Form onSubmit={handleSubmit}>
-          <Modal.Body>
-            <Form.Group className="mb-3">
-              <Form.Label>Name</Form.Label>
-              <Form.Control
+        <form onSubmit={handleSubmit}>
+          <Modal.Body className={styles.modalBody}>
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>Name</label>
+              <input
                 type="text"
+                className={styles.formInput}
                 value={formData.name}
                 onChange={(e) => setFormData({...formData, name: e.target.value})}
                 required
               />
-            </Form.Group>
+            </div>
             
-            <Form.Group className="mb-3">
-              <Form.Label>Description</Form.Label>
-              <Form.Control
-                as="textarea"
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>Description</label>
+              <textarea
+                className={styles.formInput}
                 rows={3}
                 value={formData.description}
                 onChange={(e) => setFormData({...formData, description: e.target.value})}
                 required
               />
-            </Form.Group>
+            </div>
             
-            <Form.Group className="mb-3">
-              <Form.Label>SKU</Form.Label>
-              <Form.Control
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>SKU</label>
+              <input
                 type="text"
+                className={styles.formInput}
                 value={formData.sku}
                 onChange={(e) => setFormData({...formData, sku: e.target.value})}
                 required
               />
-            </Form.Group>
+            </div>
             
-            <Form.Group className="mb-3">
-              <Form.Label>Price</Form.Label>
-              <Form.Control
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>Price</label>
+              <input
                 type="number"
                 step="0.01"
+                className={styles.formInput}
                 value={formData.price}
                 onChange={(e) => setFormData({...formData, price: e.target.value})}
                 required
               />
-            </Form.Group>
+            </div>
             
-            <Form.Group className="mb-3">
-              <Form.Label>Stock Quantity</Form.Label>
-              <Form.Control
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>Stock Quantity</label>
+              <input
                 type="number"
+                className={styles.formInput}
                 value={formData.stockQuantity}
                 onChange={(e) => setFormData({...formData, stockQuantity: e.target.value})}
                 required
               />
-            </Form.Group>
+            </div>
             
-            <Form.Group className="mb-3">
-              <Form.Label>Image URL</Form.Label>
-              <Form.Control
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>Image URL</label>
+              <input
                 type="text"
+                className={styles.formInput}
                 value={formData.imageUrl}
                 onChange={(e) => setFormData({...formData, imageUrl: e.target.value})}
                 placeholder="https://example.com/image.jpg"
               />
-            </Form.Group>
+            </div>
             
-            <Form.Group className="mb-3">
-              <Form.Label>Status</Form.Label>
-              <Form.Select
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>Status</label>
+              <select
+                className={styles.formSelect}
                 value={formData.status}
                 onChange={(e) => setFormData({...formData, status: e.target.value})}
               >
@@ -226,18 +268,18 @@ const AdminProducts = () => {
                 <option value="INACTIVE">Inactive</option>
                 <option value="OUT_OF_STOCK">Out of Stock</option>
                 <option value="DISCONTINUED">Discontinued</option>
-              </Form.Select>
-            </Form.Group>
+              </select>
+            </div>
           </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseModal}>
+          <Modal.Footer className={styles.modalFooter}>
+            <button type="button" className={styles.cancelBtn} onClick={handleCloseModal}>
               Cancel
-            </Button>
-            <Button variant="primary" type="submit">
+            </button>
+            <button type="submit" className={styles.submitBtn}>
               {editingProduct ? 'Update' : 'Create'} Product
-            </Button>
+            </button>
           </Modal.Footer>
-        </Form>
+        </form>
       </Modal>
     </div>
   );

@@ -1,28 +1,40 @@
 import React from 'react';
-import { Modal, Button } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
 import { motion } from 'framer-motion';
 import { FaExclamationTriangle, FaTimes, FaCheck } from 'react-icons/fa';
+import styles from './ConfirmationModal.module.css';
 
 const ConfirmationModal = ({ show, onHide, onConfirm, title, message, confirmText = 'Confirm', cancelText = 'Cancel', type = 'warning' }) => {
-  const getIcon = () => {
+  const getIconClass = () => {
     switch(type) {
       case 'danger':
-        return <FaExclamationTriangle className="text-danger" size={48} />;
+        return styles.iconDanger;
       case 'success':
-        return <FaCheck className="text-success" size={48} />;
+        return styles.iconSuccess;
       default:
-        return <FaExclamationTriangle className="text-warning" size={48} />;
+        return styles.iconWarning;
     }
   };
 
-  const getGradient = () => {
+  const getConfirmBtnClass = () => {
     switch(type) {
       case 'danger':
-        return 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+        return styles.confirmBtnDanger;
       case 'success':
-        return 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+        return styles.confirmBtnSuccess;
       default:
-        return 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
+        return styles.confirmBtnWarning;
+    }
+  };
+
+  const getIcon = () => {
+    switch(type) {
+      case 'danger':
+        return <FaExclamationTriangle className={getIconClass()} />;
+      case 'success':
+        return <FaCheck className={getIconClass()} />;
+      default:
+        return <FaExclamationTriangle className={getIconClass()} />;
     }
   };
 
@@ -32,36 +44,34 @@ const ConfirmationModal = ({ show, onHide, onConfirm, title, message, confirmTex
       onHide={onHide} 
       centered 
       backdrop="static"
-      className="confirmation-modal"
+      contentClassName={styles.modalContent}
     >
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: "spring", duration: 0.5 }}
       >
-        <Modal.Body className="text-center p-5">
-          <div className="mb-4">
+        <div className={styles.modalBody}>
+          <div className={styles.iconContainer}>
             {getIcon()}
           </div>
-          <h3 className="mb-3 fw-bold">{title}</h3>
-          <p className="text-muted mb-4">{message}</p>
-          <div className="d-flex gap-3 justify-content-center">
-            <Button 
-              variant="outline-secondary" 
+          <h3 className={styles.title}>{title}</h3>
+          <p className={styles.message}>{message}</p>
+          <div className={styles.buttonContainer}>
+            <button 
+              className={styles.cancelBtn}
               onClick={onHide}
-              className="rounded-pill px-4 py-2"
             >
-              <FaTimes className="me-2" /> {cancelText}
-            </Button>
-            <Button 
+              <FaTimes /> {cancelText}
+            </button>
+            <button 
+              className={`${styles.confirmBtn} ${getConfirmBtnClass()}`}
               onClick={onConfirm}
-              className="rounded-pill px-4 py-2"
-              style={{ background: getGradient(), border: 'none' }}
             >
-              <FaCheck className="me-2" /> {confirmText}
-            </Button>
+              <FaCheck /> {confirmText}
+            </button>
           </div>
-        </Modal.Body>
+        </div>
       </motion.div>
     </Modal>
   );

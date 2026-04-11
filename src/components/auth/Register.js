@@ -4,6 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { showLoadingToast } from '../../utils/toast';
 import { motion } from 'framer-motion';
 import { FaGoogle, FaApple, FaShoppingBag } from 'react-icons/fa';
+import styles from './Register.module.css';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -60,30 +61,30 @@ const Register = () => {
   };
 
   return (
-    <div className="auth-container-modern">
-      <div className="auth-grid">
+    <div className={styles.container}>
+      <div className={styles.grid}>
         {/* Left Side - Brand Section */}
-        <div className="auth-brand-side">
+        <div className={styles.brandSide}>
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
-            className="brand-content-modern"
+            className={styles.brandContent}
           >
-            <div className="brand-logo-modern">
+            <div className={styles.brandLogo}>
               <FaShoppingBag size={42} />
               <h1>ShopHub</h1>
             </div>
             <h2>Join our community</h2>
             <p>Create an account to enjoy exclusive deals and faster checkout</p>
-            <div className="brand-features-modern">
-              <div className="feature">
+            <div className={styles.brandFeatures}>
+              <div className={styles.feature}>
                 <span>✓</span> Exclusive member discounts
               </div>
-              <div className="feature">
+              <div className={styles.feature}>
                 <span>✓</span> Early access to sales
               </div>
-              <div className="feature">
+              <div className={styles.feature}>
                 <span>✓</span> Free shipping on orders over $50
               </div>
             </div>
@@ -91,33 +92,33 @@ const Register = () => {
         </div>
 
         {/* Right Side - Form Section */}
-        <div className="auth-form-side">
+        <div className={styles.formSide}>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="form-container-modern"
+            className={styles.formContainer}
           >
-            <div className="form-header-modern">
+            <div className={styles.formHeader}>
               <h2>Create account</h2>
               <p>
                 Already have an account?{' '}
-                <Link to="/login" className="auth-link-modern">
+                <Link to="/login" className={styles.authLink}>
                   Log in
                 </Link>
               </p>
             </div>
 
             {error && (
-              <div className="alert-modern alert-error-modern">
+              <div className={`${styles.alert} ${styles.alertError}`}>
                 {error}
               </div>
             )}
 
             <form onSubmit={handleSubmit}>
-              <div className="row-modern">
-                <div className="col-modern">
-                  <div className="input-group-modern">
+              <div className={styles.row}>
+                <div className={styles.col}>
+                  <div className={styles.inputGroup}>
                     <label>First name</label>
                     <input
                       type="text"
@@ -126,12 +127,12 @@ const Register = () => {
                       value={formData.firstName}
                       onChange={handleChange}
                       required
-                      className="input-modern"
+                      className={styles.input}
                     />
                   </div>
                 </div>
-                <div className="col-modern">
-                  <div className="input-group-modern">
+                <div className={styles.col}>
+                  <div className={styles.inputGroup}>
                     <label>Last name</label>
                     <input
                       type="text"
@@ -140,13 +141,13 @@ const Register = () => {
                       value={formData.lastName}
                       onChange={handleChange}
                       required
-                      className="input-modern"
+                      className={styles.input}
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="input-group-modern">
+              <div className={styles.inputGroup}>
                 <label>Email address</label>
                 <input
                   type="email"
@@ -155,11 +156,11 @@ const Register = () => {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="input-modern"
+                  className={styles.input}
                 />
               </div>
 
-              <div className="input-group-modern">
+              <div className={styles.inputGroup}>
                 <label>Password</label>
                 <input
                   type="password"
@@ -168,12 +169,12 @@ const Register = () => {
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  className="input-modern"
+                  className={styles.input}
                 />
               </div>
 
-              <div className="checkbox-group-modern">
-                <label className="checkbox-label">
+              <div className={styles.checkboxGroup}>
+                <label className={styles.checkboxLabel}>
                   <input
                     type="checkbox"
                     checked={agreeTerms}
@@ -186,21 +187,21 @@ const Register = () => {
               <button 
                 type="submit" 
                 disabled={loading}
-                className="submit-btn-modern"
+                className={styles.submitBtn}
               >
                 {loading ? 'Creating account...' : 'Create account'}
               </button>
             </form>
 
-            <div className="divider-modern">
+            <div className={styles.divider}>
               <span>Or register with</span>
             </div>
 
-            <div className="social-buttons-modern">
-              <button className="social-btn-modern">
+            <div className={styles.socialButtons}>
+              <button className={styles.socialBtn}>
                 <FaGoogle /> Google
               </button>
-              <button className="social-btn-modern">
+              <button className={styles.socialBtn}>
                 <FaApple /> Apple
               </button>
             </div>
