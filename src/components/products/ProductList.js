@@ -27,10 +27,19 @@ const ProductList = () => {
     const params = new URLSearchParams(location.search);
     const searchQuery = params.get('search');
     
+    // Only show products that are ACTIVE
+    let activeProducts = products.filter(p => p.status === 'ACTIVE');
+    
     if (searchQuery) {
-      filterProductsBySearch(searchQuery);
+      const lowerQuery = searchQuery.toLowerCase();
+      activeProducts = activeProducts.filter(product => 
+        product.name.toLowerCase().includes(lowerQuery) ||
+        product.description.toLowerCase().includes(lowerQuery) ||
+        product.sku?.toLowerCase().includes(lowerQuery)
+      );
+      setFilteredProducts(activeProducts);
     } else {
-      setFilteredProducts(products);
+      setFilteredProducts(activeProducts);
     }
     setCurrentPage(1);
   }, [products, location.search]);
@@ -39,7 +48,6 @@ const ProductList = () => {
     try {
       const response = await productAPI.getAll();
       setProducts(Array.isArray(response.data) ? response.data : []);
-      setFilteredProducts(Array.isArray(response.data) ? response.data : []);
       setLoading(false);
     } catch (err) {
       setError('Failed to load products');
@@ -47,23 +55,15 @@ const ProductList = () => {
     }
   };
 
-  const filterProductsBySearch = (query) => {
-    if (!query) {
-      setFilteredProducts(products);
-      return;
-    }
-    
-    const lowerQuery = query.toLowerCase();
-    const filtered = products.filter(product => 
-      product.name.toLowerCase().includes(lowerQuery) ||
-      product.description.toLowerCase().includes(lowerQuery) ||
-      product.sku?.toLowerCase().includes(lowerQuery)
-    );
-    setFilteredProducts(filtered);
-  };
-
   const addToCart = async (productId, productName, productStock, e) => {
     e.stopPropagation();
+    
+    // Check if product is active
+    const product = products.find(p => p.id === productId);
+    if (product?.status !== 'ACTIVE') {
+      showError(`${productName} is not available for purchase.`);
+      return;
+    }
     
     if (productStock <= 0) {
       showError(`${productName} is out of stock!`);
@@ -104,21 +104,16 @@ const ProductList = () => {
     navigate(`/products/${productId}`);
   };
 
-  // Helper function to get the best image URL
   const getProductImage = (product) => {
-    // Check for multiple images first
     if (product.images && product.images.length > 0) {
       return product.images[0];
     }
-    // Fallback to single image URL
     if (product.imageUrl) {
       return product.imageUrl;
     }
-    // Default placeholder
     return `https://placehold.co/300x200/667eea/white?text=${encodeURIComponent(product.name.substring(0, 20))}`;
   };
 
-  // Handle image error
   const handleImageError = (e, productName) => {
     e.target.onerror = null;
     e.target.src = `https://placehold.co/300x200/ef4444/white?text=${encodeURIComponent(productName.substring(0, 20))}`;
@@ -212,7 +207,6 @@ const ProductList = () => {
                         onError={(e) => handleImageError(e, product.name)}
                         loading="lazy"
                       />
-                      {/* Image count badge for multiple images */}
                       {product.images && product.images.length > 1 && (
                         <span className={styles.imageCount}>
                           +{product.images.length}
@@ -229,6 +223,7 @@ const ProductList = () => {
                       <div className={styles.price}>
                         ${product.price}
                       </div>
+                      {/* Hide stock info for non-ACTIVE products - but we only show ACTIVE ones anyway, so keep as is */}
                       <div className={styles.stock}>
                         {product.stockQuantity > 0 ? (
                           <span className={styles.inStock}>✓ In Stock: {product.stockQuantity}</span>
@@ -239,9 +234,9 @@ const ProductList = () => {
                       <button 
                         className={styles.addToCartBtn}
                         onClick={(e) => addToCart(product.id, product.name, product.stockQuantity, e)}
-                        disabled={product.stockQuantity === 0 || addingToCart[product.id]}
+                        disabled={product.status !== 'ACTIVE' || product.stockQuantity === 0 || addingToCart[product.id]}
                       >
-                        {addingToCart[product.id] ? 'Adding...' : 'Add to Cart'}
+                        {product.status !== 'ACTIVE' ? 'Unavailable' : (addingToCart[product.id] ? 'Adding...' : 'Add to Cart')}
                       </button>
                     </div>
                   </div>

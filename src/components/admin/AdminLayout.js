@@ -14,7 +14,7 @@ const AdminLayout = () => {
     return null;
   }
 
-  const isActive = (path) => location.pathname === path;
+  const isActive = (path) => location.pathname === path || location.pathname === `/admin${path}`;
 
   return (
     <Container fluid className={styles.container}>
@@ -25,25 +25,31 @@ const AdminLayout = () => {
           <div className={styles.nav}>
             <Link 
               to="/admin" 
-              className={`${styles.navLink} ${isActive('/admin') ? styles.active : ''}`}
+              className={`${styles.navLink} ${isActive('') ? styles.active : ''}`}
             >
               Dashboard
             </Link>
             <Link 
               to="/admin/products" 
-              className={`${styles.navLink} ${isActive('/admin/products') ? styles.active : ''}`}
+              className={`${styles.navLink} ${isActive('/products') ? styles.active : ''}`}
             >
               Products
             </Link>
             <Link 
+              to="/admin/quick-add" 
+              className={`${styles.navLink} ${isActive('/quick-add') ? styles.active : ''}`}
+            >
+              Quick Add Product
+            </Link>
+            <Link 
               to="/admin/orders" 
-              className={`${styles.navLink} ${isActive('/admin/orders') ? styles.active : ''}`}
+              className={`${styles.navLink} ${isActive('/orders') ? styles.active : ''}`}
             >
               Orders
             </Link>
             <Link 
               to="/admin/users" 
-              className={`${styles.navLink} ${isActive('/admin/users') ? styles.active : ''}`}
+              className={`${styles.navLink} ${isActive('/users') ? styles.active : ''}`}
             >
               Users
             </Link>

@@ -41,6 +41,11 @@ const ProductDetail = () => {
       return;
     }
 
+    if (product.status !== 'ACTIVE') {
+      showError(`${product.name} is not available for purchase.`);
+      return;
+    }
+
     if (product.stockQuantity <= 0) {
       showError(`${product.name} is out of stock!`);
       return;
@@ -79,7 +84,6 @@ const ProductDetail = () => {
     return `https://placehold.co/500x500/667eea/white?text=${encodeURIComponent(product?.name?.substring(0, 20) || 'Product')}`;
   };
 
-  // Prepare images array
   const productImages = product?.images && product.images.length > 0 
     ? product.images 
     : (product?.imageUrl ? [product.imageUrl] : []);
@@ -108,6 +112,8 @@ const ProductDetail = () => {
       </Container>
     );
   }
+
+  const isAvailable = product.status === 'ACTIVE' && product.stockQuantity > 0;
 
   return (
     <Container className={styles.container}>
@@ -142,13 +148,21 @@ const ProductDetail = () => {
               </p>
               
               <div>
-                {product.stockQuantity > 0 ? (
+                {product.status === 'ACTIVE' && product.stockQuantity > 0 ? (
                   <Badge bg="success" className={`${styles.stockBadge} ${styles.inStock}`}>
                     ✓ In Stock: {product.stockQuantity}
                   </Badge>
-                ) : (
+                ) : product.status === 'ACTIVE' && product.stockQuantity === 0 ? (
                   <Badge bg="danger" className={`${styles.stockBadge} ${styles.outOfStock}`}>
                     ✗ Out of Stock
+                  </Badge>
+                ) : product.status === 'DISCONTINUED' ? (
+                  <Badge bg="secondary" className={`${styles.stockBadge} ${styles.discontinued}`}>
+                    Discontinued
+                  </Badge>
+                ) : (
+                  <Badge bg="secondary" className={`${styles.stockBadge} ${styles.inactive}`}>
+                    Not Available
                   </Badge>
                 )}
               </div>
@@ -157,9 +171,9 @@ const ProductDetail = () => {
                 <button 
                   className={styles.addToCartBtn}
                   onClick={addToCart}
-                  disabled={product.stockQuantity === 0 || addingToCart}
+                  disabled={!isAvailable || addingToCart}
                 >
-                  {product.stockQuantity === 0 ? 'Out of Stock' : (addingToCart ? 'Adding...' : 'Add to Cart')}
+                  {!isAvailable ? 'Unavailable' : (addingToCart ? 'Adding...' : 'Add to Cart')}
                 </button>
                 
                 <button 

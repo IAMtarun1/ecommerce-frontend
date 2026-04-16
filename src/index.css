@@ -234,11 +234,11 @@ body::before {
 [data-theme="light"] {
   --bg-dark: #f5f5f5;
   --bg-darker: #ffffff;
-  --bg-card: #ffffff;
+  --bg-card: #cc8c8c;
   --text-primary: #1c1cca;
   --text-secondary: #4b5563;
   --text-muted: #6b7280;
-  --border-color: #e5e7eb;
+  --border-color: #345fb5;
   --input-bg: #f9fafb;
   --input-text: #1a1a2e;
   --input-border: #e5e7eb;

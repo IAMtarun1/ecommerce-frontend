@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Form, Alert, Spinner } from 'react-bootstrap';
 import { productAPI } from '../../services/api';
+import { showSuccess, showError } from '../../utils/toast';
+import ConfirmationModal from '../common/ConfirmationModal';
 import styles from './AdminProducts.module.css';
 
 const AdminProducts = () => {
@@ -18,6 +20,10 @@ const AdminProducts = () => {
     status: 'ACTIVE'
   });
   const [error, setError] = useState('');
+  
+  // Delete confirmation modal state
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
 
   useEffect(() => {
     fetchProducts();
@@ -78,27 +84,42 @@ const AdminProducts = () => {
 
       if (editingProduct) {
         await productAPI.update(editingProduct.id, productData);
-        alert('Product updated successfully!');
+        showSuccess('Product updated successfully!');
       } else {
         await productAPI.create(productData);
-        alert('Product created successfully!');
+        showSuccess('Product created successfully!');
       }
       fetchProducts();
       handleCloseModal();
     } catch (err) {
-      setError('Failed to save product: ' + (err.response?.data?.message || 'Unknown error'));
+      const errorMsg = err.response?.data?.message || 'Unknown error';
+      setError('Failed to save product: ' + errorMsg);
+      showError('Failed to save product: ' + errorMsg);
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
-      try {
-        await productAPI.delete(id);
-        alert('Product deleted successfully!');
-        fetchProducts();
-      } catch (err) {
-        alert('Failed to delete product');
+  const handleDeleteClick = (product) => {
+    setProductToDelete(product);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!productToDelete) return;
+    
+    try {
+      await productAPI.delete(productToDelete.id);
+      showSuccess('Product deleted successfully!');
+      fetchProducts();
+    } catch (err) {
+      console.error('Delete error:', err);
+      let errorMsg = err.response?.data?.message || err.response?.data?.error || 'Failed to delete product';
+      if (err.response?.status === 409) {
+        errorMsg = 'Cannot delete product with existing orders. Mark as discontinued instead.';
       }
+      showError(errorMsg);
+    } finally {
+      setShowDeleteConfirm(false);
+      setProductToDelete(null);
     }
   };
 
@@ -170,7 +191,7 @@ const AdminProducts = () => {
                     <button className={styles.editBtn} onClick={() => handleOpenModal(product)}>
                       Edit
                     </button>
-                    <button className={styles.deleteBtn} onClick={() => handleDelete(product.id)}>
+                    <button className={styles.deleteBtn} onClick={() => handleDeleteClick(product)}>
                       Delete
                     </button>
                   </div>
@@ -281,6 +302,18 @@ const AdminProducts = () => {
           </Modal.Footer>
         </form>
       </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        show={showDeleteConfirm}
+        onHide={() => setShowDeleteConfirm(false)}
+        onConfirm={confirmDelete}
+        title="Delete Product"
+        message={`Are you sure you want to delete "${productToDelete?.name}"? This action cannot be undone.`}
+        confirmText="Yes, Delete"
+        cancelText="Cancel"
+        type="danger"
+      />
     </div>
   );
 };

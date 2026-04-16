@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Badge, Button, Modal, Form, Spinner, Alert } from 'react-bootstrap';
+import { Table, Badge, Modal, Spinner, Alert } from 'react-bootstrap';
 import { orderAPI } from '../../services/api';
+import { showSuccess, showError } from '../../utils/toast';
 import styles from './AdminOrders.module.css';
 
 const AdminOrders = () => {
@@ -46,11 +47,11 @@ const AdminOrders = () => {
     setUpdatingStatus(true);
     try {
       await orderAPI.updateOrderStatus(orderId, newStatus);
-      alert(`Order status updated to ${newStatus}`);
+      showSuccess(`Order status updated to ${newStatus}`);
       fetchOrders();
       setShowModal(false);
     } catch (err) {
-      alert('Failed to update order status');
+      showError('Failed to update order status');
       console.error(err);
     } finally {
       setUpdatingStatus(false);
@@ -94,7 +95,7 @@ const AdminOrders = () => {
         </div>
       ) : (
         <div className="table-responsive">
-          <table className={`table ${styles.table}`}>
+          <table className={styles.table}>
             <thead>
               <tr>
                 <th>Order #</th>
@@ -133,8 +134,8 @@ const AdminOrders = () => {
                     >
                       View
                     </button>
-                   </td>
-                 </tr>
+                  </td>
+                </tr>
               ))}
             </tbody>
           </table>
@@ -159,11 +160,11 @@ const AdminOrders = () => {
                   <tr>
                     <th>Customer:</th>
                     <td>{selectedOrder.userEmail}</td>
-                   </tr>
+                  </tr>
                   <tr>
                     <th>Date:</th>
                     <td>{new Date(selectedOrder.createdAt).toLocaleString()}</td>
-                   </tr>
+                  </tr>
                   <tr>
                     <th>Status:</th>
                     <td>
@@ -179,11 +180,11 @@ const AdminOrders = () => {
                       </select>
                       {updatingStatus && <Spinner size="sm" className="ms-2" />}
                     </td>
-                   </tr>
+                  </tr>
                   <tr>
                     <th>Payment Method:</th>
                     <td>{selectedOrder.paymentMethod || 'N/A'}</td>
-                   </tr>
+                  </tr>
                   <tr>
                     <th>Payment Status:</th>
                     <td>
@@ -191,15 +192,15 @@ const AdminOrders = () => {
                         {selectedOrder.paymentStatus || 'PENDING'}
                       </span>
                     </td>
-                   </tr>
+                  </tr>
                   <tr>
                     <th>Shipping Address:</th>
                     <td className={styles.shippingAddress}>{selectedOrder.shippingAddress}</td>
-                   </tr>
+                  </tr>
                   <tr>
                     <th>Total Amount:</th>
                     <td><h5 className={styles.totalAmountLarge}>${selectedOrder.totalAmount?.toFixed(2)}</h5></td>
-                   </tr>
+                  </tr>
                 </tbody>
               </table>
 
@@ -211,7 +212,7 @@ const AdminOrders = () => {
                     <th>Quantity</th>
                     <th>Price</th>
                     <th>Subtotal</th>
-                   </tr>
+                  </tr>
                 </thead>
                 <tbody>
                   {selectedOrder.items?.map((item, idx) => (
@@ -234,9 +235,9 @@ const AdminOrders = () => {
           )}
         </Modal.Body>
         <Modal.Footer className={styles.modalFooter}>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
+          <button className="btn btn-secondary" onClick={() => setShowModal(false)}>
             Close
-          </Button>
+          </button>
         </Modal.Footer>
       </Modal>
     </div>

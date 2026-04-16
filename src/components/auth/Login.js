@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form } from 'react-bootstrap';
+import { Form, Alert } from 'react-bootstrap';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { showLoadingToast } from '../../utils/toast';
@@ -26,22 +26,20 @@ const Login = () => {
     setError('');
     setLoading(true);
     
+    console.log('Attempting login with:', email);
+    
     try {
-      await showLoadingToast(
-        'Logging in...',
-        'Welcome back!',
-        'Invalid email or password',
-        async () => {
-          const result = await login(email, password);
-          if (!result.success) {
-            throw new Error(result.message);
-          }
-          return result;
-        }
-      );
-      navigate('/');
+      const result = await login(email, password);
+      console.log('Login result:', result);
+      
+      if (result.success) {
+        navigate('/');
+      } else {
+        setError(result.message || 'Invalid email or password');
+      }
     } catch (err) {
-      setError(err.message);
+      console.error('Login error:', err);
+      setError('Unable to connect to server. Please make sure the backend is running on port 8080.');
     } finally {
       setLoading(false);
     }
@@ -102,12 +100,12 @@ const Login = () => {
               </div>
             )}
 
-            <Form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit}>
               <div className={styles.inputGroup}>
                 <label>Email address</label>
                 <input
                   type="email"
-                  placeholder="name@example.com"
+                  placeholder="admin@ecommerce.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -119,7 +117,7 @@ const Login = () => {
                 <label>Password</label>
                 <input
                   type="password"
-                  placeholder="Enter your password"
+                  placeholder="admin123"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -134,7 +132,7 @@ const Login = () => {
               >
                 {loading ? 'Signing in...' : 'Sign In'}
               </button>
-            </Form>
+            </form>
 
             <div className={styles.divider}>
               <span>Or sign in with</span>

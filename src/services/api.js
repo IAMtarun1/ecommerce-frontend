@@ -24,6 +24,8 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
       console.log(`🔑 Token added for: ${config.url}`);
+    } else {
+      console.log(`⚠️ No token found for: ${config.url}`);
     }
     
     console.log(`📤 ${config.method?.toUpperCase()} ${config.url}`);
@@ -45,28 +47,21 @@ api.interceptors.response.use(
     if (error.response) {
       console.error(`❌ API Error ${error.response.status}:`, error.response.data);
       
-      // Handle 401 Unauthorized - token expired
+      // Only redirect to login for 401 Unauthorized, not for 403
       if (error.response.status === 401 && !isRedirecting) {
         isRedirecting = true;
         console.log('Token expired or invalid. Redirecting to login...');
-        
-        // Clear local storage
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        
-        // Show message to user
-        const message = error.response.data?.message || 'Your session has expired. Please login again.';
-        
-        // Redirect to login page
         window.location.href = '/login';
-        
-        // Reset flag after redirect
         setTimeout(() => {
           isRedirecting = false;
         }, 1000);
       }
     } else if (error.request) {
       console.error('❌ No response from server');
+    } else {
+      console.error('❌ Error:', error.message);
     }
     return Promise.reject(error);
   }
@@ -110,9 +105,18 @@ export const productAPI = {
     return api.get('/products');
   },
   getById: (id) => api.get(`/products/${id}`),
-  create: (product) => api.post('/products', product),
-  update: (id, product) => api.put(`/products/${id}`, product),
-  delete: (id) => api.delete(`/products/${id}`),
+  create: (product) => {
+    console.log('📦 Creating product:', product);
+    return api.post('/products', product);
+  },
+  update: (id, product) => {
+    console.log(`✏️ Updating product ${id}:`, product);
+    return api.put(`/products/${id}`, product);
+  },
+  delete: (id) => {
+    console.log(`🗑️ Deleting product ${id}`);
+    return api.delete(`/products/${id}`);
+  },
 };
 
 // Order endpoints

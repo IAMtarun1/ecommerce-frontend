@@ -1,6 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { authAPI } from '../services/api';
-import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
 
@@ -13,7 +12,6 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     if (token) {
-      // Load user from localStorage
       const userData = JSON.parse(localStorage.getItem('user') || 'null');
       if (userData) {
         setUser(userData);
@@ -22,31 +20,11 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, [token]);
 
-  // Check token validity periodically
-  useEffect(() => {
-    if (!token) return;
-
-    const checkTokenValidity = async () => {
-      try {
-        // Make a lightweight request to check if token is still valid
-        await authAPI.checkEmail('dummy@test.com');
-      } catch (error) {
-        if (error.response?.status === 401) {
-          console.log('Token expired during periodic check');
-          logout();
-        }
-      }
-    };
-
-    // Check token every 5 minutes
-    const interval = setInterval(checkTokenValidity, 5 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, [token]);
-
   const login = async (email, password) => {
     try {
+      console.log('Calling login API...');
       const response = await authAPI.login({ email, password });
-      console.log('Login response:', response.data);
+      console.log('API Response:', response.data);
       
       if (response.data.success) {
         const newToken = response.data.token;
@@ -58,13 +36,19 @@ export const AuthProvider = ({ children }) => {
         setToken(newToken);
         setUser(userData);
         
-        console.log('✅ Login successful, token saved');
+        console.log('Login successful');
         return { success: true };
       }
       return { success: false, message: response.data.message };
     } catch (error) {
-      console.error('Login error:', error);
-      return { success: false, message: error.response?.data?.message || 'Login failed' };
+      console.error('Login API error:', error);
+      let errorMessage = 'Login failed';
+      if (error.response) {
+        errorMessage = error.response.data?.message || `Server error: ${error.response.status}`;
+      } else if (error.request) {
+        errorMessage = 'Cannot connect to server. Make sure backend is running on port 8080';
+      }
+      return { success: false, message: errorMessage };
     }
   };
 
@@ -83,7 +67,6 @@ export const AuthProvider = ({ children }) => {
         setToken(newToken);
         setUser(newUser);
         
-        console.log('✅ Registration successful, token saved');
         return { success: true };
       }
       return { success: false, message: response.data.message };
@@ -98,7 +81,6 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('user');
     setToken(null);
     setUser(null);
-    console.log('👋 User logged out');
   };
 
   const value = {
