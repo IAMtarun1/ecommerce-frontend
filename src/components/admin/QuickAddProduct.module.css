@@ -254,3 +254,15 @@
     position: static;
   }
 }
+
+.formHint {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.7rem;
+  color: var(--text-muted, #64748b);
+}
+
+/* Light theme hint color is handled by the variable */
+[data-theme="light"] .formHint {
+  color: #6b7280;
+}

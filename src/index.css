@@ -227,6 +227,37 @@ body::before {
   }
 }
 
+/* Modern Toast Styles */
+.modern-toast {
+    animation: slideInUp 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards !important;
+    position: relative;
+    backdrop-filter: blur(12px);
+    border-radius: 16px !important;
+    padding: 14px 20px !important;
+    font-weight: 500 !important;
+    font-size: 14px !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+@keyframes slideInUp {
+    0% {
+        transform: translateY(100px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Hover effect */
+.modern-toast:hover {
+    transform: scale(1.02);
+    transition: transform 0.2s ease;
+    cursor: pointer;
+}
+
 /* ============================================ */
 /* END OF GLOBAL STYLES */
 /* ============================================ */
@@ -397,3 +428,5 @@ body {
 [data-theme="light"] .empty-cart-message {
   color: #6b7280;
 }
+
+

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Form, Alert, Spinner } from 'react-bootstrap';
+import { Modal, Spinner } from 'react-bootstrap';
 import { productAPI } from '../../services/api';
 import { showSuccess, showError } from '../../utils/toast';
 import ConfirmationModal from '../common/ConfirmationModal';
@@ -20,6 +20,7 @@ const AdminProducts = () => {
     status: 'ACTIVE'
   });
   const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   
   // Delete confirmation modal state
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -71,10 +72,12 @@ const AdminProducts = () => {
     setShowModal(false);
     setEditingProduct(null);
     setError('');
+    setSubmitting(false);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
     try {
       const productData = {
         ...formData,
@@ -95,6 +98,8 @@ const AdminProducts = () => {
       const errorMsg = err.response?.data?.message || 'Unknown error';
       setError('Failed to save product: ' + errorMsg);
       showError('Failed to save product: ' + errorMsg);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -202,102 +207,142 @@ const AdminProducts = () => {
         </table>
       </div>
 
-      {/* Product Modal */}
-      <Modal show={showModal} onHide={handleCloseModal} size="lg" contentClassName={styles.modalContent}>
+      {/* Enhanced Product Modal */}
+      <Modal show={showModal} onHide={handleCloseModal} size="lg" centered contentClassName={styles.modalContent}>
         <Modal.Header closeButton className={styles.modalHeader}>
           <Modal.Title className={styles.modalTitle}>
-            {editingProduct ? 'Edit Product' : 'Add New Product'}
+            {editingProduct ? '✏️ Edit Product' : '✨ Add New Product'}
           </Modal.Title>
         </Modal.Header>
         <form onSubmit={handleSubmit}>
           <Modal.Body className={styles.modalBody}>
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel}>Name</label>
-              <input
-                type="text"
-                className={styles.formInput}
-                value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
-                required
-              />
-            </div>
+            {error && <div className={styles.modalError}>{error}</div>}
             
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel}>Description</label>
-              <textarea
-                className={styles.formInput}
-                rows={3}
-                value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
-                required
-              />
-            </div>
-            
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel}>SKU</label>
-              <input
-                type="text"
-                className={styles.formInput}
-                value={formData.sku}
-                onChange={(e) => setFormData({...formData, sku: e.target.value})}
-                required
-              />
-            </div>
-            
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel}>Price</label>
-              <input
-                type="number"
-                step="0.01"
-                className={styles.formInput}
-                value={formData.price}
-                onChange={(e) => setFormData({...formData, price: e.target.value})}
-                required
-              />
-            </div>
-            
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel}>Stock Quantity</label>
-              <input
-                type="number"
-                className={styles.formInput}
-                value={formData.stockQuantity}
-                onChange={(e) => setFormData({...formData, stockQuantity: e.target.value})}
-                required
-              />
-            </div>
-            
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel}>Image URL</label>
-              <input
-                type="text"
-                className={styles.formInput}
-                value={formData.imageUrl}
-                onChange={(e) => setFormData({...formData, imageUrl: e.target.value})}
-                placeholder="https://example.com/image.jpg"
-              />
-            </div>
-            
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel}>Status</label>
-              <select
-                className={styles.formSelect}
-                value={formData.status}
-                onChange={(e) => setFormData({...formData, status: e.target.value})}
-              >
-                <option value="ACTIVE">Active</option>
-                <option value="INACTIVE">Inactive</option>
-                <option value="OUT_OF_STOCK">Out of Stock</option>
-                <option value="DISCONTINUED">Discontinued</option>
-              </select>
+            <div className={styles.modalGrid}>
+              {/* Left Column - Main Fields */}
+              <div className={styles.modalLeft}>
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>Product Name *</label>
+                  <input
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    placeholder="e.g., Wireless Headphones"
+                    className={styles.formInput}
+                    required
+                  />
+                </div>
+                
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>Description *</label>
+                  <textarea
+                    rows={4}
+                    value={formData.description}
+                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    placeholder="Describe the product features, benefits, etc."
+                    className={styles.formTextarea}
+                    required
+                  />
+                </div>
+                
+                <div className={styles.formRow}>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Price ($) *</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={formData.price}
+                      onChange={(e) => setFormData({...formData, price: e.target.value})}
+                      placeholder="0.00"
+                      className={styles.formInput}
+                      required
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Stock Quantity *</label>
+                    <input
+                      type="number"
+                      value={formData.stockQuantity}
+                      onChange={(e) => setFormData({...formData, stockQuantity: e.target.value})}
+                      placeholder="0"
+                      className={styles.formInput}
+                      required
+                    />
+                  </div>
+                </div>
+                
+                <div className={styles.formRow}>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>SKU *</label>
+                    <input
+                      type="text"
+                      value={formData.sku}
+                      onChange={(e) => setFormData({...formData, sku: e.target.value})}
+                      placeholder="Unique identifier"
+                      className={styles.formInput}
+                      required
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Status</label>
+                    <select
+                      value={formData.status}
+                      onChange={(e) => setFormData({...formData, status: e.target.value})}
+                      className={styles.formSelect}
+                    >
+                      <option value="ACTIVE">Active</option>
+                      <option value="INACTIVE">Inactive</option>
+                      <option value="OUT_OF_STOCK">Out of Stock</option>
+                      <option value="DISCONTINUED">Discontinued</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Right Column - Image Preview & URL */}
+              <div className={styles.modalRight}>
+                <div className={styles.imagePreviewSection}>
+                  <label className={styles.formLabel}>Product Image</label>
+                  <div className={styles.imagePreviewContainer}>
+                    {formData.imageUrl ? (
+                      <img 
+                        src={formData.imageUrl} 
+                        alt="Preview" 
+                        className={styles.imagePreview}
+                        onError={(e) => {
+                          e.target.src = 'https://placehold.co/300x300/667eea/white?text=Invalid+URL';
+                        }}
+                      />
+                    ) : (
+                      <div className={styles.imagePlaceholder}>
+                        <span>🖼️</span>
+                        <p>No image preview</p>
+                      </div>
+                    )}
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Image URL</label>
+                    <input
+                      type="text"
+                      value={formData.imageUrl}
+                      onChange={(e) => setFormData({...formData, imageUrl: e.target.value})}
+                      placeholder="https://example.com/image.jpg"
+                      className={styles.formInput}
+                    />
+                    <small className={styles.formHint}>
+                      Enter a direct image URL (JPG, PNG, etc.)
+                    </small>
+                  </div>
+                </div>
+              </div>
             </div>
           </Modal.Body>
           <Modal.Footer className={styles.modalFooter}>
-            <button type="button" className={styles.cancelBtn} onClick={handleCloseModal}>
+            <button type="button" className={styles.cancelModalBtn} onClick={handleCloseModal}>
               Cancel
             </button>
-            <button type="submit" className={styles.submitBtn}>
-              {editingProduct ? 'Update' : 'Create'} Product
+            <button type="submit" className={styles.submitModalBtn} disabled={submitting}>
+              {submitting ? 'Saving...' : (editingProduct ? 'Update Product' : 'Create Product')}
             </button>
           </Modal.Footer>
         </form>

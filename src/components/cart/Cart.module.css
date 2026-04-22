@@ -81,6 +81,8 @@
   border-radius: 16px;
   overflow: hidden;
   margin-bottom: 0;
+  width: 100%;
+  border-collapse: collapse;
 }
 
 .table thead th {
@@ -90,6 +92,7 @@
   border: none;
   font-weight: 600;
   font-size: 0.875rem;
+  text-align: left;
 }
 
 .table tbody td {
@@ -240,6 +243,60 @@
   cursor: not-allowed;
 }
 
+/* Light theme overrides */
+[data-theme="light"] .cartContent {
+  background: #ffffff;
+  border-color: #e5e7eb;
+}
+
+[data-theme="light"] .table {
+  background: #ffffff;
+}
+
+[data-theme="light"] .table tbody td {
+  border-bottom-color: #e5e7eb;
+  color: #4b5563;
+}
+
+[data-theme="light"] .productName {
+  color: #1a1a2e;
+}
+
+[data-theme="light"] .productId {
+  color: #9ca3af;
+}
+
+[data-theme="light"] .price {
+  color: #4b5563;
+}
+
+[data-theme="light"] .quantityInput {
+  background: #f9fafb;
+  border-color: #e5e7eb;
+  color: #1a1a2e;
+}
+
+[data-theme="light"] .summary {
+  background: #f9fafb;
+  border-color: #e5e7eb;
+}
+
+[data-theme="light"] .summaryTitle {
+  color: #1a1a2e;
+}
+
+[data-theme="light"] .summaryRow {
+  color: #4b5563;
+}
+
+[data-theme="light"] .totalLabel {
+  color: #1a1a2e;
+}
+
+[data-theme="light"] .cartItem:hover {
+  background: rgba(102, 126, 234, 0.05);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .container {
@@ -280,54 +337,4 @@
   .totalAmount {
     font-size: 1.25rem;
   }
-}
-
-/* Dark theme specific overrides */
-[data-theme="dark"] .cartContent {
-  background: #1a1a2e;
-  border-color: #2d2d44;
-}
-
-[data-theme="dark"] .summary {
-  background: #0f0f1a;
-  border-color: #2d2d44;
-}
-
-[data-theme="dark"] .quantityInput {
-  background: #0f0f1a;
-  border-color: #2d2d44;
-  color: #e2e8f0;
-}
-
-/* Light theme specific overrides */
-[data-theme="light"] .cartContent {
-  background: #ffffff;
-  border-color: #e5e7eb;
-}
-
-[data-theme="light"] .summary {
-  background: #f9fafb;
-  border-color: #e5e7eb;
-}
-
-[data-theme="light"] .quantityInput {
-  background: #f9fafb;
-  border-color: #e5e7eb;
-  color: #1a1a2e;
-}
-
-[data-theme="light"] .productName {
-  color: #1a1a2e;
-}
-
-[data-theme="light"] .price {
-  color: #4b5563;
-}
-
-[data-theme="light"] .summaryRow {
-  color: #4b5563;
-}
-
-[data-theme="light"] .totalLabel {
-  color: #1a1a2e;
 }

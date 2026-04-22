@@ -27,27 +27,23 @@ function App() {
       <AuthProvider>
         <Router>
           <Navigation />
-          <Toaster 
-            position="top-center"
-            reverseOrder={false}
-            gutter={8}
-            toastOptions={{
-              duration: 3000,
-              className: 'go-toast',
-              success: {
-                duration: 3000,
-                icon: null,
-              },
-              error: {
-                duration: 4000,
-                icon: null,
-              },
-              loading: {
-                duration: Infinity,
-                icon: null,
-              },
-            }}
-          />
+            <Toaster
+                position="top-center"
+                reverseOrder={false}
+                gutter={8}
+                toastOptions={{
+                    className: 'modern-toast',
+                    success: {
+                        duration: 3000,
+                    },
+                    error: {
+                        duration: 4000,
+                    },
+                    loading: {
+                        duration: Infinity,
+                    },
+                }}
+            />
           <div className="main-container">
             <Routes>
               {/* Home Page */}

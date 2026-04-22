@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Form, Button, Alert, Card, Row, Col } from 'react-bootstrap';
+import { Container, Card, Row, Col } from 'react-bootstrap';
 import { productAPI } from '../../services/api';
 import { showSuccess, showError } from '../../utils/toast';
 import styles from './QuickAddProduct.module.css';
@@ -75,7 +75,7 @@ const QuickAddProduct = () => {
           <p className={styles.subtitle}>Add new products to your store quickly</p>
         </Card.Header>
         <Card.Body>
-          <Form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit}>
             <Row>
               <Col md={8}>
                 <div className={styles.formGroup}>
@@ -188,7 +188,7 @@ const QuickAddProduct = () => {
                       Sample Image
                     </button>
                   </div>
-                  <small className="text-muted" style={{ display: 'block', marginTop: '0.25rem', color: 'var(--text-muted, #64748b)' }}>
+                  <small className={styles.formHint}>
                     Enter a URL for the product image or click "Sample Image" for a random product photo
                   </small>
                 </div>
@@ -243,7 +243,7 @@ const QuickAddProduct = () => {
                 Clear Form
               </button>
             </div>
-          </Form>
+          </form>
         </Card.Body>
       </Card>
     </Container>
